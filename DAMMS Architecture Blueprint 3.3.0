@@ -1,0 +1,1153 @@
+# DAMMS Architecture Topology Blueprint
+
+**System Blueprint & Governance Sub-System Specification Matrix**
+**Version:** 3.3.0-PROD
+**System Identifier:** logical_causal_pipeline_v3
+
+---
+
+## 1. Executive Structural Overview
+
+The **Distributed Agentic Multi-Model System (DAMMS)** architecture is a highly integrated, self-healing, multi-tiered cognitive operating framework. It moves away from standard simple LLM chaining configurations, establishing instead an engineering architecture that balances deterministic execution, runtime validation, self-critique, and external physical/digital boundary control.
+
+This update integrates the complete **Governance Sub-System Array** directly into the **Meta-Reasoning & Social Layers**, introducing strict runtime compliance boundaries, immutable auditing chains, and dynamic risk mitigation filters.
+
+### Layer Hierarchy Matrix
+
+```
+       ┌────────────────────────────────────────────────────────┐
+       │             SOCIAL-INTERACTION & INTERFACE             │
+       │     (Dialogue, Social Norms, Empathy, Persona, Multi)   │
+       └───────────────────────────┬────────────────────────────┘
+                                   │ Raw Inputs / Formatted Outputs
+                                   ▼
+       ┌────────────────────────────────────────────────────────┐
+       │     META-REASONING, GOVERNANCE & POLICY OVERWATCH      │
+       │   (Strategy, Budget, Critique, Rules, Ethics, Risks)   │
+       └───────────────────────────┬────────────────────────────┘
+                                   │ Structural Directives & Vetoes
+                                   ▼
+       ┌────────────────────────────────────────────────────────┐
+       │                    COGNITIVE CORE                      │
+       │         (Planning, Logic, Causality, Fact-Check)       │
+       └─────────────┬─────────────┴──────────────┬─────────────┘
+                     │                            │
+                     ▼                            ▼
+       ┌───────────────────────────┐┌───────────────────────────┐
+       │     DOMAINS & AGENTS      ││    COGNITIVE FOUNDATION   │
+       │  (Legal, Medical, Finance)││  (Working/Long-Term Mem)  │
+       └─────────────┬─────────────┘└─────────────┬─────────────┘
+                     │                            │
+                     └─────────────┬──────────────┘
+                                   │ Evaluated Payloads
+                                   ▼
+       ┌────────────────────────────────────────────────────────┐
+       │           ORCHESTRATION & INFRASTRUCTURE               │
+       │      (Routing, State, Security, Execution Scheduler)    │
+       └───────────────────────────┬────────────────────────────┘
+                                   │ Parameterized IO
+                                   ▼
+       ┌────────────────────────────────────────────────────────┐
+       │               EXTERNAL ENVIRONMENT & I/O               │
+       │         (APIs, Web, File System, Database, IoT)        │
+       └────────────────────────────────────────────────────────┘
+
+```
+
+---
+
+## 2. Complete Consolidated Agent Registry
+
+# =========================================================
+
+### 2.1 Cognitive Core Agents
+
+# =========================================================
+
+* **planning_agent**
+* **Role:** Planner
+* **Capabilities:** Task decomposition, dependency graph construction, manager assignment, replan on failure.
+* **Consumes:** TaskSpec, ValidationResult
+* **Produces:** PlanGraph, PlanStep
+* **Dependencies:** reasoning_agent, validator_agent
+
+
+* **reasoning_agent**
+* **Role:** Logical reasoning
+* **Capabilities:** Forward chaining, backward chaining, unification, proof tree construction, logical assessment.
+* **Consumes:** LogicalFormula, LogicalAtom, InferenceRule
+* **Produces:** ProofTree, LogicalAssessment
+* **Dependencies:** validator_agent
+
+
+* **causal_reasoner**
+* **Role:** Causal reasoning
+* **Capabilities:** Build causal graph, update causal graph, intervention simulation, counterfactual reasoning, confounder detection.
+* **Consumes:** CausalGraph, InterventionQuery, CounterfactualQuery
+* **Produces:** CausalAssessment, CounterfactualResult, CausalGraphUpdateProposal
+* **Dependencies:** fact_checker_agent, knowledge_auditor
+
+
+* **constraint_enforcer**
+* **Role:** Constraint enforcer
+* **Capabilities:** Schema validation, tone checking, style checking, domain rule enforcement.
+* **Consumes:** CandidateOutput
+* **Produces:** ConstraintViolations
+* **Dependencies:** validator_agent
+
+
+* **fact_checker_agent**
+* **Role:** Fact checker
+* **Capabilities:** Claim extraction, evidence retrieval, claim verification, multi-pass fact checking.
+* **Consumes:** ClaimSet
+* **Produces:** FactCheckReport
+* **Dependencies:** source_ranking_agent
+
+
+* **knowledge_auditor**
+* **Role:** Knowledge audit
+* **Capabilities:** Detect conflicts, detect staleness, confidence reassessment, propose updates.
+* **Consumes:** FactCheckReport, CausalAssessment
+* **Produces:** KnowledgeUpdateProposal
+* **Dependencies:** knowledge_commit_agent
+
+
+* **source_ranking_agent**
+* **Role:** Source evaluation
+* **Capabilities:** Reliability scoring, bias detection, authority assessment.
+* **Consumes:** EvidenceRefs
+* **Produces:** SourceProfile
+* **Dependencies:** *None*
+
+
+* **validator_agent**
+* **Role:** Validator
+* **Capabilities:** Apply logical contracts, apply causal contracts, apply schema contracts, final output validation.
+* **Consumes:** CandidateOutput, Contracts
+* **Produces:** ValidationResult
+* **Dependencies:** constraint_enforcer
+
+
+* **orchestrator**
+* **Role:** Orchestration engine
+* **Capabilities:** Global routing, merge step results, manage execution flow, assemble final answer.
+* **Consumes:** PlanGraph, StepResults
+* **Produces:** FinalAnswer
+* **Dependencies:** * (Global Read-Access)
+
+
+* **knowledge_commit_agent**
+* **Role:** Knowledge commit
+* **Capabilities:** Apply KB updates, manage provenance, enforce commit policies.
+* **Consumes:** KnowledgeUpdateProposal
+* **Produces:** KnowledgeBaseUpdate
+* **Dependencies:** validator_agent
+
+
+* **document_ingestion_agent**
+* **Role:** Document ingestion
+* **Capabilities:** Segmentation, metadata extraction.
+* **Consumes:** Document
+* **Produces:** DocumentSegments
+* **Dependencies:** *None*
+
+
+* **explanation_generator**
+* **Role:** Explanation generation
+* **Capabilities:** Template realization, narrative synthesis, confidence aggregation.
+* **Consumes:** ExplanationSkeleton, ProofTree
+* **Produces:** UserExplanation
+* **Dependencies:** reasoning_agent
+
+
+* **claim_extraction_agent**
+* **Role:** Claim extraction
+* **Capabilities:** Extract atomic claims, extract causal claims, extract rules, extract assumptions.
+* **Consumes:** DocumentSegments, UserExplanation
+* **Produces:** ClaimSet, RuleCandidateSet
+* **Dependencies:** *None*
+
+
+
+# =========================================================
+
+### 2.2 Meta-Reasoning Agents
+
+# =========================================================
+
+* **strategy_optimizer**
+* **Role:** Meta reasoning (Strategy optimization)
+* **Capabilities:** Analyze past runs, optimize task decomposition, choose planning style, tune agent selection, recommend parallelization.
+* **Consumes:** ExecutionTrace, PlanGraph, ValidationResult
+* **Produces:** StrategyRecommendation, PlanRefinement
+* **Dependencies:** planning_agent, meta_planner, uncertainty_estimator
+
+
+* **self_critic**
+* **Role:** Meta reasoning (Critique)
+* **Capabilities:** Critique intermediate outputs, detect missing cases, identify unjustified leaps, propose revisions.
+* **Consumes:** ProofTree, UserExplanation, StepResults
+* **Produces:** CritiqueReport, RevisionRequest
+* **Dependencies:** reasoning_agent, causal_reasoner, validator_agent
+
+
+* **meta_planner**
+* **Role:** Meta planning
+* **Capabilities:** Choose planning style, configure reasoning depth, decide replan vs refine, manage parallel vs sequential execution.
+* **Consumes:** TaskSpec, StrategyRecommendation, CritiqueReport
+* **Produces:** PlanningConfiguration, PlannerDirective
+* **Dependencies:** planning_agent, strategy_optimizer
+
+
+* **uncertainty_estimator**
+* **Role:** Meta reasoning (Uncertainty assessment)
+* **Capabilities:** Compute confidence scores, detect low confidence regions, recommend fact checking, recommend additional data.
+* **Consumes:** ProofTree, CausalAssessment, FactCheckReport
+* **Produces:** ConfidenceMap, UncertaintyReport
+* **Dependencies:** fact_checker_agent, causal_reasoner
+
+
+* **explainer_agent**
+* **Role:** Meta reasoning (Explanation synthesis)
+* **Capabilities:** Generate human readable rationales, produce execution traces, summarize tradeoffs, translate proof trees.
+* **Consumes:** ProofTree, PlanGraph, StrategyRecommendation
+* **Produces:** ExplanationSkeleton, Rationale
+* **Dependencies:** explanation_generator, reasoning_agent
+
+
+* **alignment_agent**
+* **Role:** Meta governance
+* **Capabilities:** Enforce global policies, detect policy violations, veto unsafe plans, request revision for alignment.
+* **Consumes:** PlanGraph, CandidateOutput, CritiqueReport
+* **Produces:** AlignmentDecision, RevisionRequest
+* **Dependencies:** validator_agent, orchestrator
+
+
+* **resource_budgeter**
+* **Role:** Meta reasoning (Resource management)
+* **Capabilities:** Manage compute budget, manage time budget, manage cost budget, choose parallel vs sequential execution, limit reasoning depth.
+* **Consumes:** TaskSpec, PlanningConfiguration, ExecutionTrace
+* **Produces:** ResourcePlan, BudgetDirective
+* **Dependencies:** meta_planner, orchestrator
+
+
+
+# =========================================================
+
+### 2.3 Governance & Policy Overwatch Sub-System Agents [NEW ARRAY]
+
+# =========================================================
+
+* **policy_enforcement_agent**
+* **Role:** Global Rule Enforcement
+* **Capabilities:** Intercept execution paths to apply safety, ethics, and corporate compliance guardrails; veto unsafe operations; issue structural revision specifications to planning matrices.
+* **Consumes:** PlanGraph, CandidateOutput, PolicyDirectives
+* **Produces:** VetoDirective, PolicyComplianceReport, RevisionRequest
+* **Dependencies:** governance_orchestrator, alignment_agent, constraint_enforcer
+
+
+* **oversight_agent**
+* **Role:** Runtime Agent Behavior Monitor
+* **Capabilities:** Detect real-time sub-agent deviations from designated operational bounds; escalate runtime boundary anomalies; evaluate runtime systemic integrity.
+* **Consumes:** ActiveWorkspaceState, ExecutionTrace, AgentTelemetry
+* **Produces:** DeviationAlert, BehavioralAuditReport
+* **Dependencies:** monitoring_agent, governance_orchestrator
+
+
+* **audit_trail_agent**
+* **Role:** Accountability Ledger Logger
+* **Capabilities:** Compile comprehensive, tamper-evident audit strings tracking agent interaction vectors, runtime calculations, tool access requests, and explicit reasoning trees.
+* **Consumes:** StepResults, ExecutionTrace, LogicalAssessment, ToolUsageLog
+* **Produces:** ImmutableAuditTrailReceipt, SystemicLogArchive
+* **Dependencies:** logging_agent, accountability_agent
+
+
+* **risk_assessment_agent**
+* **Role:** Hazard Analysis Engine
+* **Capabilities:** Proactively analyze target outputs for high-risk system vulnerabilities, operational safety risks, or unintended cascading downstream impacts.
+* **Consumes:** PlanGraph, CandidateOutput, CausalAssessment
+* **Produces:** RiskProfileEvaluation, DownstreamHazardAlert
+* **Dependencies:** causal_reasoner, uncertainty_estimator
+
+
+* **ethics_review_agent**
+* **Role:** Fairness and Moral Bounds Evaluator
+* **Capabilities:** Audit system conclusions for algorithmic fairness constraints, potential socio-technical biases, and systemic harm elements.
+* **Consumes:** UserExplanation, DerivedFactSet, TargetObjective
+* **Produces:** EthicalImpactAssessment, MoralConstraintViolation
+* **Dependencies:** bias_detection_agent, social_norms_agent
+
+
+* **compliance_agent**
+* **Role:** Domain Regulation Validator
+* **Capabilities:** Validate analytical outputs against domain-specific regulatory constructs including GDPR, HIPAA, data custody mandates, and franchise framework structures.
+* **Consumes:** CandidateOutput, LegalObligationMap, RegulatoryDirectives
+* **Produces:** RegulatoryComplianceCertification, ComplianceDeficitReport
+* **Dependencies:** legal_reasoning_agent, policy_enforcement_agent
+
+
+* **permissioning_agent**
+* **Role:** Boundary Access Controller
+* **Capabilities:** Restrict agent capabilities via strict RBAC matrices; police operational tool bounds, database partitions, and external API pipelines.
+* **Consumes:** ApiCallSpecification, FileOperationRequest, ActiveParticipantMap
+* **Produces:** AccessPermissionAuthorization, SecurityBoundaryVeto
+* **Dependencies:** security_access_agent, constraint_enforcer
+
+
+* **governance_orchestrator**
+* **Role:** Global Governance Conductor
+* **Capabilities:** Synthesize analytical inputs from policy layers, risk registers, and ethical reviewers into unique, final validation execution approvals or structural system rejections.
+* **Consumes:** RiskProfileEvaluation, PolicyComplianceReport, EthicalImpactAssessment, ComplianceDeficitReport
+* **Produces:** UnifiedGovernanceDirective, SystemicExecutionRelease
+* **Dependencies:** orchestrator, policy_enforcement_agent, * (Governance Array Read/Write)
+
+
+* **bias_detection_agent**
+* **Role:** Structural Bias Profiler
+* **Capabilities:** Intercept execution sets to scan structural facts and narrative outputs for embedded skew configurations, outputting explicit text repairs.
+* **Consumes:** ClaimSet, CandidateOutput, CategoricalRefinement
+* **Produces:** BiasPatternAnalysis, FairnessCorrectionSpecification
+* **Dependencies:** source_ranking_agent, concept_formation_agent
+
+
+* **accountability_agent**
+* **Role:** Attribution Mapping Tracker
+* **Capabilities:** Track operational intent by assigning strict ownership parameters to distinct agents for each step result and logic modification.
+* **Consumes:** StepResults, PlanStep, KnowledgeUpdateProposal
+* **Produces:** AttributionMapMatrix, TraceabilityReceipt
+* **Dependencies:** state_manager_agent, audit_trail_agent
+
+
+
+# =========================================================
+
+### 2.4 Domain Specialist Agents
+
+# =========================================================
+
+* **legal_reasoning_agent**
+* **Domain:** Legal
+* **Capabilities:** Interpret statutes, analyze contracts, extract obligations, detect legal conflicts, summarize legal positions.
+* **Consumes:** LegalText, ClaimSet, PlanStep
+* **Produces:** LegalAnalysis, LegalRiskAssessment, LegalObligationMap
+* **Dependencies:** fact_checker_agent, alignment_agent
+
+
+* **medical_safety_agent**
+* **Domain:** Medical
+* **Capabilities:** Validate medical claims, enforce clinical guidelines, detect unsafe advice, recommend medical review.
+* **Consumes:** MedicalClaimSet, UserExplanation
+* **Produces:** MedicalSafetyReport, SafetyRevisionRequest
+* **Dependencies:** fact_checker_agent, alignment_agent
+
+
+* **financial_analysis_agent**
+* **Domain:** Finance
+* **Capabilities:** Ratio analysis, risk assessment, forecasting, scenario modeling.
+* **Consumes:** FinancialData, PlanStep
+* **Produces:** FinancialReport, RiskProfile, ForecastModel
+* **Dependencies:** data_science_agent, reasoning_agent
+
+
+* **cybersecurity_agent**
+* **Domain:** Security
+* **Capabilities:** Detect vulnerabilities, evaluate threat models, recommend mitigations, classify risk levels.
+* **Consumes:** SystemDescription, ThreatIndicators
+* **Produces:** SecurityAssessment, MitigationPlan
+* **Dependencies:** reasoning_agent, alignment_agent
+
+
+* **data_science_agent**
+* **Domain:** Data Science
+* **Capabilities:** Statistical analysis, model building, model validation, dataset interpretation, method recommendation.
+* **Consumes:** Dataset, AnalysisRequest
+* **Produces:** StatisticalReport, ModelArtifact, MethodRecommendation
+* **Dependencies:** reasoning_agent, uncertainty_estimator
+
+
+* **scientific_research_agent**
+* **Domain:** Science
+* **Capabilities:** Evaluate study design, identify methodological flaws, summarize findings, assess evidence strength.
+* **Consumes:** ResearchPaper, ClaimSet
+* **Produces:** ScientificAssessment, EvidenceStrengthReport
+* **Dependencies:** fact_checker_agent, causal_reasoner
+
+
+* **ux_writing_agent**
+* **Domain:** User Experience
+* **Capabilities:** Generate microcopy, enforce clarity, maintain tone consistency, adapt copy to user context.
+* **Consumes:** PlanStep, UIFlowDescription
+* **Produces:** UXCopy, ToneConsistencyReport
+* **Dependencies:** explainer_agent, constraint_enforcer
+
+
+* **business_strategy_agent**
+* **Domain:** Corporate Strategy
+* **Capabilities:** SWOT analysis, competitive mapping, strategic recommendations, scenario planning.
+* **Consumes:** BusinessContext, MarketData
+* **Produces:** StrategyReport, StrategicRecommendation
+* **Dependencies:** financial_analysis_agent, reasoning_agent
+
+
+* **pedagogy_agent**
+* **Domain:** Education
+* **Capabilities:** Instructional design, concept scaffolding, adaptive explanation, learning plan generation.
+* **Consumes:** LearningGoal, UserProfile
+* **Produces:** LearningPlan, PedagogicalExplanation
+* **Dependencies:** explainer_agent, reasoning_agent
+
+
+* **engineering_analysis_agent**
+* **Domain:** Engineering
+* **Capabilities:** Evaluate designs, constraint checking, failure mode analysis, system modeling.
+* **Consumes:** EngineeringSpec, SystemModel
+* **Produces:** EngineeringAssessment, ConstraintViolationReport
+* **Dependencies:** data_science_agent, reasoning_agent
+
+
+* **creative_direction_agent**
+* **Domain:** Creative
+* **Capabilities:** Maintain brand voice, propose concepts, critique creative drafts, guide visual and tone direction.
+* **Consumes:** CreativeBrief, DraftContent
+* **Produces:** CreativeDirection, ConceptProposal
+* **Dependencies:** explainer_agent, constraint_enforcer
+
+
+
+# =========================================================
+
+### 2.5 Cognitive Foundation Agents
+
+# =========================================================
+
+* **working_memory_agent**
+* **Role:** Short term workspace
+* **Capabilities:** Hold intermediate reasoning, track runtime variables, manage context windows, dynamic workspace pruning.
+* **Consumes:** StepResults, ContextWindowMetrics
+* **Produces:** ActiveWorkspaceState, VariableMap
+* **Dependencies:** resource_budgeter
+
+
+* **long_term_memory_agent**
+* **Role:** Long term storage
+* **Capabilities:** Encode knowledge structures, retrieve conceptual facts, update historical records, prune stale concepts.
+* **Consumes:** KnowledgeBaseUpdate, RetrievalQuery
+* **Produces:** RetrievedFactSet, MemoryPruningLog
+* **Dependencies:** knowledge_commit_agent
+
+
+* **attention_control_agent**
+* **Role:** Cognitive focus
+* **Capabilities:** Prioritize salient information, suppress informational noise, manage salience maps.
+* **Consumes:** ClaimSet, TaskSpec
+* **Produces:** FocusedClaimSet, AttentionSalienceMap
+* **Dependencies:** constraint_enforcer
+
+
+* **meta_cognition_agent**
+* **Role:** Reasoning reflection
+* **Capabilities:** Evaluate thought processes, detect cognitive biases, recommend reasoning adjustments.
+* **Consumes:** ProofTree, Rationale
+* **Produces:** BiasAssessmentReport, ReasoningAdjustmentDirective
+* **Dependencies:** self_critic
+
+
+* **cognitive_load_manager**
+* **Role:** Complexity mitigation
+* **Capabilities:** Chunk complex tasks, offload memory buffers, prevent over reasoning loops.
+* **Consumes:** TaskSpec, ContextWindowMetrics
+* **Produces:** TaskChunkPlan, LoadMitigationDirective
+* **Dependencies:** resource_budgeter, planning_agent
+
+
+* **schema_builder_agent**
+* **Role:** Structured framework builder
+* **Capabilities:** Create ontologies, generate schemas, map conceptual frameworks.
+* **Consumes:** RuleCandidateSet, ConceptMap
+* **Produces:** TargetSchemaSpecification, KnowledgeOntology
+* **Dependencies:** document_ingestion_agent
+
+
+* **concept_formation_agent**
+* **Role:** Abstraction generation
+* **Capabilities:** Generalize data patterns, form new abstract concepts, refine semantic categories.
+* **Consumes:** LogicalAtom, ClaimSet
+* **Produces:** AbstractConceptDefinition, CategoricalRefinement
+* **Dependencies:** reasoning_agent
+
+
+* **inference_engine_agent**
+* **Role:** Fundamental reasoner
+* **Capabilities:** Apply deterministic rules, derive implicit implications, generate abductive hypotheses.
+* **Consumes:** LogicalFormula, InferenceRule
+* **Produces:** DerivedFactSet, HypothesisHypothetical
+* **Dependencies:** reasoning_agent
+
+
+* **cognitive_consistency_agent**
+* **Role:** Internal coherence enforcer
+* **Capabilities:** Detect internal contradictions, unify belief networks, resolve knowledge base conflicts.
+* **Consumes:** KnowledgeUpdateProposal, ProofTree
+* **Produces:** CoherenceAssessment, ConflictResolutionDirectives
+* **Dependencies:** knowledge_auditor, validator_agent
+
+
+* **learning_strategy_agent**
+* **Role:** Knowledge optimization
+* **Capabilities:** Select learning methodologies, schedule system updates, evaluate structural knowledge gaps.
+* **Consumes:** UncertaintyReport, MemoryPruningLog
+* **Produces:** LearningSchedule, KnowledgeGapAnalysis
+* **Dependencies:** strategy_optimizer
+
+
+
+# =========================================================
+
+### 2.6 Social & Interactive Agents
+
+# =========================================================
+
+* **dialogue_agent**
+* **Role:** Conversational continuity
+* **Capabilities:** Execute turn taking, adapt conversational tone, track interaction context, handle conversational repair.
+* **Consumes:** UserUtterance, InteractiveState
+* **Produces:** DialogueTurn, ConversationContextLog
+* **Dependencies:** ux_writing_agent, working_memory_agent
+
+
+* **negotiation_agent**
+* **Role:** Conflict resolution
+* **Capabilities:** Formulate structured offers, evaluate tradeoffs, maintain game theoretic fairness, execute de-escalation tactics.
+* **Consumes:** ConflictState, StrategicDirectives
+* **Produces:** NegotiationProposal, MultiPartyAgreement
+* **Dependencies:** business_strategy_agent, social_reasoning_agent
+
+
+* **persuasion_agent**
+* **Role:** Ethical influence
+* **Capabilities:** Construct structured arguments, execute tailored messaging, anticipate user objections.
+* **Consumes:** TargetObjective, UserProfile
+* **Produces:** PersuasiveFraming, ArgumentStructure
+* **Dependencies:** reasoning_agent, empathy_agent
+
+
+* **empathy_agent**
+* **Role:** Emotional intelligence
+* **Capabilities:** Detect user sentiment, execute emotionally intelligent responses, maintain user rapport.
+* **Consumes:** UserUtterance, VoiceAcousticMetrics
+* **Produces:** SentimentProfile, EmpatheticBuffer
+* **Dependencies:** attention_control_agent
+
+
+* **social_norms_agent**
+* **Role:** Etiquette enforcer
+* **Capabilities:** Adjust politeness levels, enforce formality bounds, execute cultural adaptations.
+* **Consumes:** CandidateOutput, CulturalContextSpec
+* **Produces:** NormCompliantOutput, PolitenessAdjustmentReport
+* **Dependencies:** constraint_enforcer
+
+
+* **multi_agent_coordinator**
+* **Role:** Group interaction mediator
+* **Capabilities:** Track participant roles, mediate multi party turn taking, prevent cross talk collisions, summarize global group state.
+* **Consumes:** GroupStream, ActiveParticipantMap
+* **Produces:** MediatedTurnDirective, GroupStateSummary
+* **Dependencies:** orchestrator, dialogue_agent
+
+
+* **persona_simulation_agent**
+* **Role:** Persona engine
+* **Capabilities:** Maintain consistent voice, simulate background narratives, execute goal driven behaviors.
+* **Consumes:** PersonaProfileSpec, DialogueTurn
+* **Produces:** PersonaCompliantTurn, BehavioralConsistencyMetrics
+* **Dependencies:** creative_direction_agent
+
+
+* **feedback_interpretation_agent**
+* **Role:** Feedback loop interpreter
+* **Capabilities:** Detect user dissatisfaction, clarify semantic misunderstandings, recommend strategy adjustments.
+* **Consumes:** UserFeedbackStream, LastSystemAction
+* **Produces:** FeedbackAnalysisReport, InteractionAdjustmentDirective
+* **Dependencies:** self_critic, strategy_optimizer
+
+
+* **social_reasoning_agent**
+* **Role:** Theory of mind engine
+* **Capabilities:** Infer user intentions, detect hidden operational constraints, execute theory of mind modeling.
+* **Consumes:** UserUtterance, BehavioralHistory
+* **Produces:** IntentionalModel, CognitiveStateHypothesis
+* **Dependencies:** causal_reasoner
+
+
+* **conversation_summarizer_agent**
+* **Role:** Multi turn summarizer
+* **Capabilities:** Extract core interaction points, index decisions and commitments, track unresolved issues.
+* **Consumes:** ConversationContextLog
+* **Produces:** InteractionSummary, ActionItemMap
+* **Dependencies:** long_term_memory_agent
+
+
+
+# =========================================================
+
+### 2.7 Self-Repair & Debugging Sub-System Agents
+
+# =========================================================
+
+* **self_repair_agent**
+* **Role:** Structural remediation
+* **Capabilities:** Identify reasoning flaws, rewrite faulty response payloads, hot-fix execution steps, generate corrected formal logic branches.
+* **Consumes:** ConstraintViolations, CritiqueReport, FaultLocalizationMap
+* **Produces:** CorrectedLogicPayload, StepRemediationDirective
+* **Dependencies:** error_localization_agent, validator_agent
+
+
+* **trace_analyzer_agent**
+* **Role:** Execution trace diagnostics
+* **Capabilities:** Conduct multi-pass inspection of runtime execution histories, parse step-by-step agent telemetry logs, flag causal inference break points, map vulnerable workflow dependencies.
+* **Consumes:** ExecutionTrace, ActiveWorkspaceState
+* **Produces:** TraceDiagnosticReport, AnomalyIndicators
+* **Dependencies:** monitoring_agent
+
+
+* **error_localization_agent**
+* **Role:** Failure root-cause pinpointing
+* **Capabilities:** Map systemic logic errors directly back to the origin node, isolate contradictory baseline premises, determine specific sub-agent calculation failures.
+* **Consumes:** TraceDiagnosticReport, CoherenceAssessment
+* **Produces:** FaultLocalizationMap, RootCauseIsolationReceipt
+* **Dependencies:** trace_analyzer_agent
+
+
+* **assumption_checker_agent**
+* **Role:** Premise validation
+* **Capabilities:** Surfaces hidden contextual premises, systematically tests core logical axioms against current constraints, marks volatile or unsupported system configurations.
+* **Consumes:** RuleCandidateSet, LogicalFormula
+* **Produces:** PremiseAuditReport, VolatileAssumptionAlert
+* **Dependencies:** inference_engine_agent
+
+
+* **redundancy_checker_agent**
+* **Role:** Execution stream pruning
+* **Capabilities:** Intercept duplicate structural reasoning steps, detect circular processing loops, trim redundant proof parameters, optimize pipeline density.
+* **Consumes:** PlanGraph, ActiveWorkspaceState
+* **Produces:** StreamlinedGraphSpecification, PruningActionLog
+* **Dependencies:** cognitive_load_manager
+
+
+* **consistency_debugger_agent**
+* **Role:** Coherence synthesis
+* **Capabilities:** Compare real-time outputs generated across disparate agent topologies, spot hidden divergence points, synthesize unified downstream reasoning structures.
+* **Consumes:** StepResults, DerivedFactSet
+* **Produces:** UnificationStrategy, CrossLayerCoherenceReport
+* **Dependencies:** cognitive_consistency_agent
+
+
+* **regression_detection_agent**
+* **Role:** Mitigation drift assessment
+* **Capabilities:** Run sliding comparisons between previous functional states and recent repair iterations, flag regression hazards, declare pipeline state rollbacks.
+* **Consumes:** CandidateOutput, HistoricalStateArchive
+* **Produces:** RegressionDeltaReport, RollbackDirective
+* **Dependencies:** state_manager_agent
+
+
+* **self_evaluation_agent**
+* **Role:** Output telemetry metrics
+* **Capabilities:** Run automated evaluation sweeps checking payload crispness, syntax purity, logic completeness, and systemic confidence scores.
+* **Consumes:** FinalAnswer, UserExplanation
+* **Produces:** SystemPerformanceScorecard, OptimizationDirectives
+* **Dependencies:** meta_cognition_agent
+
+
+* **hypothesis_tester_agent**
+* **Role:** Counter-hypothesis exploration
+* **Capabilities:** Dynamically construct competing logical hypotheses, run simulated tests on alternative paths, output probability weightings for the best-supported route.
+* **Consumes:** HypothesisHypothetical, CausalAssessment
+* **Produces:** HypothesisEvaluationMatrix, OptimalPathRecommendation
+* **Dependencies:** causal_reasoner, environment_simulation_agent
+
+
+* **debugging_orchestrator_agent**
+* **Role:** Diagnostic sub-system conductor
+* **Capabilities:** Orchestrate specific diagnostic agent arrays, merge granular debugging payloads, safely re-inject remediated structures into active execution pipelines.
+* **Consumes:** ConstraintViolations, TelemetryAnomalyAlert
+* **Produces:** SystemicRemediationPlan, ReinitializationDirectives
+* **Dependencies:** orchestrator, error_recovery_agent, * (Debugging Sub-System Read/Write)
+
+
+
+# =========================================================
+
+### 2.8 Meta-Learning Sub-System Agents
+
+# =========================================================
+
+* **meta_learning_agent**
+* **Role:** System learning optimizer
+* **Capabilities:** Analyze structural telemetry from past tasks, extract clear multi-turn failure/success paradigms, refine future knowledge assimilation behaviors.
+* **Consumes:** SystemPerformanceScorecard, ExecutionTrace
+* **Produces:** RefinedLearningStrategy, MetaLearningTelemetry
+* **Dependencies:** learning_orchestrator_agent, self_evaluation_agent
+
+
+* **curriculum_designer_agent**
+* **Role:** Progressive task scaling
+* **Capabilities:** Construct structured educational pathways for runtime elements, sequence multi-tier training nodes from base primitives to compound configurations, map topological graph dependencies.
+* **Consumes:** KnowledgeGapAnalysis, TargetSchemaSpecification
+* **Produces:** SequentialLearningPathway, PrerequisiteConstraintMap
+* **Dependencies:** pedagogy_agent
+
+
+* **skill_acquisition_agent**
+* **Role:** New capabilities integration
+* **Capabilities:** Track functional operational constraints to isolate missing systemic tools, synthesize code boundaries for incoming execution domains, bridge novel sub-routines into existing pipelines.
+* **Consumes:** RefinedLearningStrategy, TaskChunkPlan
+* **Produces:** SynthesizedCapabilityManifest, IntegrationTestingLogs
+* **Dependencies:** schema_builder_agent, cloud_orchestration_agent
+
+
+* **knowledge_gap_detector**
+* **Role:** System informational auditing
+* **Capabilities:** Scan vector storage topologies and structural fact trees to locate domain blind spots, pinpoint under-represented edge cases, flag semantic ambiguities.
+* **Consumes:** ConfidenceMap, RetrievedFactSet
+* **Produces:** KnowledgeGapAnalysis, DomainExposureReport
+* **Dependencies:** knowledge_auditor
+
+
+* **adaptive_strategy_agent**
+* **Role:** Dynamic runtime pivot engine
+* **Capabilities:** Intercept execution bottlenecks to switch active problem-solving modes, alter mathematical reasoning resolution depth, balance computing resource distribution based on incoming structural friction.
+* **Consumes:** ContextWindowMetrics, PlanningConfiguration
+* **Produces:** ActiveStrategyPivotDirective, ReasoningDepthAdjustment
+* **Dependencies:** meta_planner, cognitive_load_manager
+
+
+* **performance_tracking_agent**
+* **Role:** Longitudinal improvement monitor
+* **Capabilities:** Track long-term validation trends across sequential user updates, flag systemic performance degradation, isolate latent logical stagnation loops.
+* **Consumes:** SystemPerformanceScorecard, HistoricalStateArchive
+* **Produces:** LongTermTrendAnalysis, StagnationAlert
+* **Dependencies:** monitoring_agent
+
+
+* **experience_replay_agent**
+* **Role:** Historic consolidation framework
+* **Capabilities:** Re-evaluate historically cached problems inside isolated testing sandboxes, refine brittle proof structures, optimize consolidated database payloads.
+* **Consumes:** HistoricalStateArchive, TraceDiagnosticReport
+* **Produces:** ConsolidatedKnowledgePayload, ReplayVerificationTrace
+* **Dependencies:** long_term_memory_agent, environment_simulation_agent
+
+
+* **generalization_agent**
+* **Role:** Cross-domain schema transfer
+* **Capabilities:** Isolate common abstract logical mechanisms across separate functional boundaries, map structural commonalities between domains, deploy generalized templates to handle alien inputs.
+* **Consumes:** AbstractConceptDefinition, CategoricalRefinement
+* **Produces:** CrossDomainTemplateSpecification, GeneralizedAxiomSet
+* **Dependencies:** concept_formation_agent
+
+
+* **self_optimization_agent**
+* **Role:** Parameter auto-tuning
+* **Capabilities:** Run sliding heuristic optimizations on routing algorithms, compute optimal pipeline parallelism limits, tune automated validation error boundaries.
+* **Consumes:** ResourcePlan, ValidationResult
+* **Produces:** OptimizedParameterSet, HeuristicAdjustmentReceipt
+* **Dependencies:** execution_scheduler_agent, validator_agent
+
+
+* **learning_orchestrator_agent**
+* **Role:** Global training lifecycle conductor
+* **Capabilities:** Schedule background training epochs, regulate architectural delta merges, orchestrate historical replication routines, safeguard pipeline alignment during framework modifications.
+* **Consumes:** KnowledgeGapAnalysis, StagnationAlert, LongTermTrendAnalysis
+* **Produces:** SystemicLearningSchedule, GlobalKnowledgeMergeDirective
+* **Dependencies:** orchestrator, alignment_agent, * (Meta-Learning Sub-System Read/Write)
+
+
+
+# =========================================================
+
+### 2.9 External Environment & I/O Agents
+
+# =========================================================
+
+* **api_interaction_agent**
+* **Role:** External API gateway
+* **Capabilities:** Format outbound requests, parse inbound responses, manage oauth and auth states, execute exponential backoff retries.
+* **Consumes:** ApiCallSpecification, EncryptedCredentials
+* **Produces:** RawApiResponse, NetworkPayloadMetrics
+* **Dependencies:** security_access_agent, constraint_enforcer
+
+
+* **web_navigation_agent**
+* **Role:** Web scraper and browser
+* **Capabilities:** Scrape structured web data, execute headless link navigation, extract unstructured dom content, enforce robots txt compliance.
+* **Consumes:** TargetUrl, ScrapingDirectives
+* **Produces:** ExtractedWebContent, WebNavigationLogs
+* **Dependencies:** document_ingestion_agent, fact_checker_agent
+
+
+* **file_system_agent**
+* **Role:** Storage IO manager
+* **Capabilities:** Execute file read write operations, manage directory structures, validate cryptographic file integrity, enforce storage access permissions.
+* **Consumes:** FileOperationRequest, PathSpecification
+* **Produces:** FileStreamOutput, IntegrityVerificationReport
+* **Dependencies:** validator_agent
+
+
+* **database_query_agent**
+* **Role:** Database interface
+* **Capabilities:** Construct parameterized queries, sanitize untrusted inputs, interpret relational and nosql results, execute transactional rollbacks.
+* **Consumes:** DatabaseDataRequest, QueryConstraints
+* **Produces:** SanitizedResultSet, DatabaseTransactionReceipt
+* **Dependencies:** constraint_enforcer, reasoning_agent
+
+
+* **sensor_interface_agent**
+* **Role:** Sensory telemetry harvester
+* **Capabilities:** Poll hardware sensor arrays, normalize heterogeneous readings, detect telemetry anomalies.
+* **Consumes:** SensorPollingDirectives, HardwareAddressMap
+* **Produces:** NormalizedSensorData, TelemetryAnomalyAlert
+* **Dependencies:** uncertainty_estimator, data_science_agent
+
+
+* **actuator_control_agent**
+* **Role:** Physical device commander
+* **Capabilities:** Transmit hardware bus commands, coordinate iot mesh states, execute physical automation routines.
+* **Consumes:** DeviceCommandPayload, SafetyEnvelopeLimits
+* **Produces:** ActuatorExecutionTrace, DeviceHardwareStatus
+* **Dependencies:** engineering_analysis_agent, alignment_agent
+
+
+* **environment_simulation_agent**
+* **Role:** Kinetic and digital simulator
+* **Capabilities:** Run high fidelity environmental simulations, predict physical intervention outcomes, execute isolated sandbox action testing.
+* **Consumes:** SimulationParameters, KineticStateModel
+* **Produces:** SimulationPredictionReport, SandboxedSafetyAudit
+* **Dependencies:** causal_reasoner, data_science_agent
+
+
+* **network_operations_agent**
+* **Role:** Network fabric diagnostician
+* **Capabilities:** Ping remote hosts, verify routing connectivity, monitor packet latency and jitter, diagnose infrastructure failures.
+* **Consumes:** NetworkTargetSpec, DiagnosticDirectives
+* **Produces:** NetworkTelemetryReport, LinkFailureDiagnostics
+* **Dependencies:** engineering_analysis_agent
+
+
+* **cloud_orchestration_agent**
+* **Role:** Cloud infrastructure provisioner
+* **Capabilities:** Deploy containerized workloads, scale elastic compute resources, manage immutable infrastructure configurations.
+* **Consumes:** CloudDeploymentManifest, TargetResourceBudget
+* **Produces:** InfrastructureStateReceipt, CloudCostTelemetry
+* **Dependencies:** resource_budgeter, cybersecurity_agent
+
+
+* **scheduler_cron_agent**
+* **Role:** Temporal event trigger
+* **Capabilities:** Set high precision timers, schedule asynchronous jobs, monitor event triggers, handle recurring cron tasks.
+* **Consumes:** TemporalScheduleSpec, TargetTaskPayload
+* **Produces:** TriggerExecutionEvent, PendingJobQueueState
+* **Dependencies:** orchestrator, cognitive_load_manager
+
+
+
+# =========================================================
+
+### 2.10 Orchestration & Infrastructure Fabric Agents
+
+# =========================================================
+
+* **memory_manager_agent**
+* **Role:** Global memory governor
+* **Capabilities:** Persist long term fact networks, manage vector embedding spaces, prune stale and low confidence info, enforce memory privacy governance.
+* **Consumes:** ActiveWorkspaceState, KnowledgeBaseUpdate
+* **Produces:** MemoryGovernanceAudit, RetrievedFactSet
+* **Dependencies:** long_term_memory_agent, working_memory_agent
+
+
+* **routing_agent**
+* **Role:** System intent router
+* **Capabilities:** Classify user and system intents, map complex tasks to specialists, dynamic agent load balancing, intercept redundant execution calls.
+* **Consumes:** TaskSpec, StepResults
+* **Produces:** PlanRefinement, PlannerDirective
+* **Dependencies:** orchestrator, cognitive_load_manager
+
+
+* **monitoring_agent**
+* **Role:** Runtime health observer
+* **Capabilities:** Track real time agent performance, detect sub system stalls and failures, compile distributed execution traces, dispatch system anomaly alerts.
+* **Consumes:** ExecutionTrace, NetworkPayloadMetrics
+* **Produces:** UncertaintyReport, LinkFailureDiagnostics
+* **Dependencies:** validator_agent
+
+
+* **state_manager_agent**
+* **Role:** Runtime state synchronizer
+* **Capabilities:** Track dynamic session variables, maintain hierarchical step goals, checkpoint partial step results, evaluate inter step dependencies.
+* **Consumes:** StepResults, PlanGraph
+* **Produces:** ActiveWorkspaceState, PlanningConfiguration
+* **Dependencies:** orchestrator
+
+
+* **error_recovery_agent**
+* **Role:** Fallback and fault remediator
+* **Capabilities:** Detect structural pipeline breakdowns, calculate backoff and retry parameters, formulate functional fallback strategies, execute orderly escalation routines.
+* **Consumes:** ConstraintViolations, TelemetryAnomalyAlert
+* **Produces:** RevisionRequest, PlannerDirective
+* **Dependencies:** monitoring_agent, planning_agent
+
+
+* **execution_scheduler_agent**
+* **Role:** Computational concurrency manager
+* **Capabilities:** Evaluate parallel vs sequential opportunities, throttle high density agent workloads, manage distributed worker pools.
+* **Consumes:** PlanGraph, ResourcePlan
+* **Produces:** BudgetDirective, MediatedTurnDirective
+* **Dependencies:** resource_budgeter, orchestrator
+
+
+* **security_access_agent**
+* **Role:** Boundary and RBAC enforcer
+* **Capabilities:** Enforce granular tool permissions, validate outbound api and data boundaries, block unauthorized token operations, intercept prompt injection anomalies.
+* **Consumes:** ApiCallSpecification, FileOperationRequest
+* **Produces:** AlignmentDecision, SecurityAssessment
+* **Dependencies:** alignment_agent, constraint_enforcer
+
+
+* **logging_agent**
+* **Role:** Structured telemetry recorder
+* **Capabilities:** Append immutable system logs, record io payload and metadata, index agent decisions for debugging, compile deterministic audit trails.
+* **Consumes:** CandidateOutput, ExecutionTrace, StepResults
+* **Produces:** InfrastructureStateReceipt
+* **Dependencies:** *None*
+
+
+* **session_manager_agent**
+* **Role:** Multi turn session gatekeeper
+* **Capabilities:** Verify user identity tokens, maintain persistent user preferences, anchor multi turn session continuity, enforce sliding context window bounds.
+* **Consumes:** UserUtterance, InteractiveState
+* **Produces:** UserProfile, ContextWindowMetrics
+* **Dependencies:** dialogue_agent
+
+
+* **knowledge_sync_agent**
+* **Role:** Active KB reconciler
+* **Capabilities:** Ingest delta updates from external sources, refresh stale embedding models, reconcile conflicting source claims.
+* **Consumes:** FactCheckReport, ExtractedWebContent
+* **Produces:** KnowledgeUpdateProposal, CoherenceAssessment
+* **Dependencies:** knowledge_auditor, knowledge_sync_agent
+
+
+
+---
+
+## 3. Dynamic Meta-Policy Execution Framework
+
+The governance structure uses deterministic triggers to override linear workflows, resolving errors, policy conflicts, or alignment drifts automatically.
+
+```
+       [Pipeline Context Generated]
+                    │
+                    ├──► (Check Trigger Conditions Below)
+                    │
+                    ▼
+     ┌────────────────────────────────────────────────────────┐
+     │ METRICS THRESHOLD EVALUATION ENGINE                    │
+     │                                                        │
+     │ 1. global_confidence less than 0.6                     │
+     │    ──► Strategy Optimizer & Meta-Planner Intervention  │
+     │                                                        │
+     │ 2. structural_instability == 'inconsistent'            │
+     │    ──► Global Structural Re-Plan Action                │
+     │                                                        │
+     │ 3. complexity == 'high' OR risk_index == 'critical'    │
+     │    ──► Mandatory Asynchronous Governance Intercept     │
+     │                                                        │
+     │ 4. policy_deviation == true                            │
+     │    ──► Policy Enforcement Veto & Active Re-Route       │
+     │                                                        │
+     │ 5. bias_density greater than 0.15                      │
+     │    ──► Bias Detection Intercept & Text Repair          │
+     │                                                        │
+     │ 6. tool_request_clearance == 'denied'                  │
+     │    ──► Permissioning Isolation & Execution Block       │
+     │                                                        │
+     │ 7. execution_fault == true                             │
+     │    ──► Debugging Orchestrator Active Capture            │
+     └────────────────────────────────────────────────────────┘
+
+```
+
+---
+
+## 4. End-to-End Core Pipelines
+
+### 4.1 Governance Overwatch Verification Pipeline (candidate_to_clearance)
+
+* **Input Type:** CandidateOutput
+* **Output Type:** UnifiedGovernanceDirective
+
+```
+  Stage G1: oversight_agent          ──► Action: scan_active_workspace
+  Stage G2: risk_assessment_agent    ──► Action: evaluate_hazard_profiles
+  Stage G3: bias_detection_agent      ──► Action: check_fairness_patterns
+  Stage G4: compliance_agent         ──► Action: verify_regulatory_bounds
+  Stage G5: ethics_review_agent      ──► Action: compute_moral_constraints
+  Stage G6: policy_enforcement_agent ──► Action: execute_policy_checks
+  Stage G7: governance_orchestrator  ──► Action: compile_unified_directive
+
+```
+
+### 4.2 Proof Tree to User Explanation (pt_to_ux)
+
+* **Input Type:** ProofTree
+* **Output Type:** UserExplanation
+
+```
+  Stage P1: reasoning_agent          ──► Action: scope_proof_tree
+  Stage P2: reasoning_agent          ──► Action: simplify_structure
+  Stage P3: reasoning_agent          ──► Action: semantic_grouping
+  Stage P4: explainer_agent          ──► Action: translate_proof_trees
+  Stage P5: validator_agent          ──► Action: aggregate_confidence
+  Stage P6: explanation_generator    ──► Action: assemble_user_explanation
+  Stage P7: audit_trail_agent        ──► Action: anchor_traceability_receipts
+
+```
+
+### 4.3 User Explanation to Logic Base (ux_to_logic)
+
+* **Input Type:** UserExplanation
+* **Output Type:** [LogicalAtom, LogicalFormula, CausalGraphUpdateProposal]
+
+```
+  Stage U1: claim_extraction_agent   ──► Action: extract_claims
+  Stage U2: reasoning_agent          ──► Action: logicalize_claims
+  Stage U3: causal_reasoner          ──► Action: extract_causal_relations
+  Stage U4: validator_agent          ──► Action: validate_logic_and_causality
+  Stage U5: accountability_agent     ──► Action: sign_ownership_matrix
+  Stage U6: knowledge_commit_agent   ──► Action: update_kb
+
+```
+
+### 4.4 Automated Self-Healing Pipeline (fault_to_remediation)
+
+* **Input Type:** ConstraintViolations
+* **Output Type:** CorrectedLogicPayload
+
+```
+  Stage F1: debugging_orchestrator   ──► Action: capture_pipeline_exception
+  Stage F2: trace_analyzer_agent     ──► Action: scan_execution_trace
+  Stage F3: error_localization_agent ──► Action: isolate_failure_node
+  Stage F4: assumption_checker_agent ──► Action: verify_underlying_axioms
+  Stage F5: consistency_debugger_agent ──► Action: reconcile_divergent_states
+  Stage F6: self_repair_agent        ──► Action: construct_remediated_payload
+  Stage F7: regression_detection_agent ──► Action: confirm_no_downstream_drift
+
+```
+
+---
+
+## 5. Architectural Validation Contracts
+
+Validation checks are handled via strict operational contracts enforced by the validation layer:
+
+```yaml
+contracts:
+  - id: vc-logical-consistency
+    checks:
+      - no_contradictory_formulas
+      - no_cycles_in_implication_graph
+      - quantifiers_bound_correctly
+
+  - id: vc-governance-integrity
+    checks:
+      - policy_compliance_index_greater_than_0.95
+      - risk_mitigation_paths_verified
+      - multi_agent_attribution_complete
+
+  - id: vc-regulatory-compliance
+    checks:
+      - data_isolation_boundaries_held
+      - regional_governance_rules_enforced
+      - explicit_permissioning_tokens_present
+
+  - id: vc-remediation-safety
+    checks:
+      - zero_introduced_regressions
+      - logic_unification_complete
+
+```
+
+---
+
+## 6. Standardized Task and Sub-Routine Procedures
+
+### Procedure Alpha: Onboarding External Tools or Hardware Agents
+
+Execute this sequence when registering a new node inside the External Environment layer:
+
+```yaml
+- id: "proc-sys-agent-onboard"
+  steps:
+    - register: "[unique_node_id]_agent"
+    - authentication: "permissioning_agent.evaluate_rbac_clearance"
+    - mapping:
+        access_role: "external_execution_perimeter"
+        security_boundary: "security_access_agent.validate_outbound_api_and_data_boundaries"
+    - contract: "vc-regulatory-compliance"
+
+```
+
+### Procedure Gamma: Dynamic Root-Cause Diagnostics
+
+Execute this sub-routine when an ongoing step output fails structural, semantic, or policy rules:
+
+```yaml
+- id: "proc-diagnostic-loop"
+  telemetry_intercept:
+    - monitor: "validator_agent"
+      trigger: "validation_failed == true"
+      call: "debugging_orchestrator_agent"
+    - monitor: "oversight_agent"
+      trigger: "policy_deviation == true"
+      call: "governance_orchestrator"
+  mitigation_routing:
+    - sequence:
+        - call: "trace_analyzer_agent.scan_execution_trace"
+        - call: "error_localization_agent.isolate_failure_node"
+        - call: "policy_enforcement_agent.issue_structural_revision"
+        - call: "self_repair_agent.construct_remediated_payload"
+    - contract: "vc-remediation-safety"
+
+```
+
+### Procedure Epsilon: Runtime Governance Intervention Loop
+
+Invoke this sequence automatically when the Risk Register or Policy Overwatch detects a system anomaly:
+
+```yaml
+- id: "proc-governance-intervention"
+  telemetry_intercept:
+    - monitor: "risk_assessment_agent"
+      trigger: "risk_index == 'critical'"
+      call: "governance_orchestrator"
+  mitigation_routing:
+    - sequence:
+        - call: "policy_enforcement_agent.apply_safety_veto"
+        - call: "bias_detection_agent.scan_structural_fairness"
+        - call: "audit_trail_agent.record_tamper_evident_log"
+    - contract: "vc-governance-integrity"
+
+```
+
+---
+
+## 7. Collected Document Production Instructions
+
+> ### Core System Design Rules
+> 
+> 
+> 1. **Visual Separation Formatting:** All major functional system configurations must be separated by high-visibility 55-character delimiter blocks (# =========================================================) to guarantee scannability.
+> 2. **Identifier Case Convention:** Every system entity identifier, data schema argument, and agent property name must use strict snake_case layout rules.
+> 3. **Input and Output Purity:** Architectural layers must interact using abstract message primitives. Layer boundaries must not consume loose string contexts directly, passing instead structured tokens validated by the security perimeter.
+> 4. **Acyclic Verification:** Runtime processing pipelines are prohibited from declaring circular upstream dependencies without matching verification or escape conditions.
+> 5. **Governance Interception Policy:** No automated payload may transition to the External Environment layer without first establishing an immutable traceability receipt signed by the accountability_agent.
+> 
+>
