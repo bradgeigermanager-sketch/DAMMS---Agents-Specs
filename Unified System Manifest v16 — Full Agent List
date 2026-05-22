@@ -1,0 +1,265 @@
+# 📦 **Unified System Manifest v16 — Full Agent List**
+
+```
+========================
+I/O & SYSTEMS LAYER
+========================
+api_interaction_agent — role: io_systems / domain: api
+web_navigation_agent — role: io_systems / domain: web
+file_system_agent — role: io_systems / domain: filesystem
+database_query_agent — role: io_systems / domain: database
+sensor_interface_agent — role: io_systems / domain: sensors
+actuator_control_agent — role: io_systems / domain: actuators
+environment_simulation_agent — role: io_systems / domain: simulation
+network_operations_agent — role: io_systems / domain: networking
+cloud_orchestration_agent — role: io_systems / domain: cloud
+scheduler_cron_agent — role: io_systems / domain: scheduling
+
+========================
+DIALOGUE & SOCIAL LAYER
+========================
+dialogue_agent — role: interaction / domain: conversation
+negotiation_agent — role: interaction / domain: negotiation
+persuasion_agent — role: interaction / domain: persuasion
+empathy_agent — role: interaction / domain: empathy
+social_norms_agent — role: interaction / domain: norms
+multi_agent_coordinator — role: interaction / domain: coordination
+persona_simulation_agent — role: interaction / domain: persona
+feedback_interpretation_agent — role: interaction / domain: feedback
+social_reasoning_agent — role: interaction / domain: social_reasoning
+conversation_summarizer_agent — role: interaction / domain: summarization
+
+========================
+CORE COGNITIVE LAYER
+========================
+working_memory_agent — role: cognition / domain: working_memory
+long_term_memory_agent — role: cognition / domain: long_term_memory
+attention_control_agent — role: cognition / domain: attention
+meta_cognition_agent — role: cognition / domain: meta_cognition
+cognitive_load_manager — role: cognition / domain: load_management
+schema_builder_agent — role: cognition / domain: schema
+concept_formation_agent — role: cognition / domain: concepts
+inference_engine_agent — role: cognition / domain: inference
+cognitive_consistency_agent — role: cognition / domain: consistency
+learning_strategy_agent — role: cognition / domain: learning_strategy
+
+========================
+META-REASONING & SELF-DEBUG LAYER
+========================
+self_repair_agent — role: meta_reasoning / domain: repair
+trace_analyzer_agent — role: meta_reasoning / domain: trace
+error_localization_agent — role: meta_reasoning / domain: errors
+assumption_checker_agent — role: meta_reasoning / domain: assumptions
+redundancy_checker_agent — role: meta_reasoning / domain: redundancy
+consistency_debugger_agent — role: meta_reasoning / domain: consistency
+regression_detection_agent — role: meta_reasoning / domain: regression
+self_evaluation_agent — role: meta_reasoning / domain: evaluation
+hypothesis_tester_agent — role: meta_reasoning / domain: hypothesis
+debugging_orchestrator_agent — role: meta_reasoning / domain: coordination
+
+========================
+META-LEARNING LAYER
+========================
+meta_learning_agent — role: meta_learning / domain: learning
+curriculum_designer_agent — role: meta_learning / domain: curriculum
+skill_acquisition_agent — role: meta_learning / domain: skills
+knowledge_gap_detector — role: meta_learning / domain: gaps
+adaptive_strategy_agent — role: meta_learning / domain: adaptation
+performance_tracking_agent — role: meta_learning / domain: performance
+experience_replay_agent — role: meta_learning / domain: replay
+generalization_agent — role: meta_learning / domain: generalization
+self_optimization_agent — role: meta_learning / domain: optimization
+learning_orchestrator_agent — role: meta_learning / domain: coordination
+
+========================
+COMMUNICATION PROTOCOL LAYER
+========================
+message_formatting_agent — role: communication / domain: formatting
+protocol_translation_agent — role: communication / domain: translation
+semantic_alignment_agent — role: communication / domain: semantics
+conversation_routing_agent — role: communication / domain: routing
+handshake_negotiation_agent — role: communication / domain: handshake
+protocol_compliance_agent — role: communication / domain: compliance
+error_resilient_messaging_agent — role: communication / domain: resilience
+context_synchronization_agent — role: communication / domain: sync
+multi_channel_communication_agent — role: communication / domain: multichannel
+protocol_orchestrator_agent — role: communication / domain: coordination
+
+========================
+RESEARCH INTELLIGENCE & VALIDATION LAYER
+========================
+research_planning_agent — role: research / domain: planning
+information_retrieval_agent — role: research / domain: retrieval
+source_credibility_agent — role: research / domain: credibility
+cross_verification_agent — role: research / domain: cross_verification
+data_quality_agent — role: research / domain: quality
+evidence_ranking_agent — role: research / domain: ranking
+bias_detection_agent — role: research / domain: bias
+claim_validation_agent — role: research / domain: validation
+data_provenance_agent — role: research / domain: provenance
+research_summarization_agent — role: research / domain: summarization
+contradiction_detection_agent — role: research / domain: contradiction
+uncertainty_estimation_agent — role: research / domain: uncertainty
+research_workflow_agent — role: research / domain: workflow
+data_validation_orchestrator — role: research / domain: coordination
+
+========================
+DERIVATION & INDUCTIVE CONSTRUCTION LAYER
+========================
+pattern_extraction_agent — role: derivation / domain: patterns
+rule_synthesis_agent — role: derivation / domain: rules
+tool_derivation_agent — role: derivation / domain: tools
+workflow_derivation_agent — role: derivation / domain: workflows
+data_driven_heuristic_agent — role: derivation / domain: heuristics
+schema_induction_agent — role: derivation / domain: schemas
+algorithm_discovery_agent — role: derivation / domain: algorithms
+meta_pattern_agent — role: derivation / domain: meta_patterns
+abstraction_agent — role: derivation / domain: abstraction
+data_driven_toolchain_agent — role: derivation / domain: toolchains
+
+========================
+GENERALIZATION & TEMPLATE INDUCTION LAYER
+========================
+task_abstraction_agent — role: generalization / domain: abstraction
+template_synthesis_agent — role: generalization / domain: templates
+process_generalization_agent — role: generalization / domain: processes
+task_pattern_matcher — role: generalization / domain: pattern_matching
+reusable_component_extractor — role: generalization / domain: components
+task_to_skill_converter — role: generalization / domain: skill_conversion
+generalization_mapping_agent — role: generalization / domain: mapping
+template_evolution_agent — role: generalization / domain: evolution
+cross_domain_pattern_agent — role: generalization / domain: cross_domain
+generalization_orchestrator — role: generalization / domain: coordination
+
+========================
+TAGGING, METADATA & ONTOLOGY LAYER
+========================
+content_tagging_agent — role: tagging / domain: content
+process_tagging_agent — role: tagging / domain: process
+template_tagging_agent — role: tagging / domain: templates
+file_type_classification_agent — role: tagging / domain: file_types
+codec_identification_agent — role: tagging / domain: codecs
+schema_tagging_agent — role: tagging / domain: schemas
+domain_mapping_agent — role: tagging / domain: domains
+use_case_tagging_agent — role: tagging / domain: use_cases
+metadata_enrichment_agent — role: tagging / domain: metadata
+tag_consistency_agent — role: tagging / domain: consistency
+ontology_linking_agent — role: tagging / domain: ontology
+tagging_orchestrator_agent — role: tagging / domain: coordination
+
+========================
+SCHEMA / CODE / DATABASE ENGINEERING LAYER
+========================
+schema_design_agent — role: schema_engineering / domain: design
+schema_evolution_agent — role: schema_engineering / domain: evolution
+database_modeling_agent — role: schema_engineering / domain: modeling
+query_construction_agent — role: schema_engineering / domain: queries
+code_generation_agent — role: schema_engineering / domain: codegen
+code_refactoring_agent — role: schema_engineering / domain: refactoring
+process_to_code_agent — role: schema_engineering / domain: process_to_code
+schema_validation_agent — role: schema_engineering / domain: validation
+database_integrity_agent — role: schema_engineering / domain: integrity
+code_dependency_agent — role: schema_engineering / domain: dependencies
+migration_planning_agent — role: schema_engineering / domain: migrations
+api_schema_agent — role: schema_engineering / domain: api
+codec_mapping_agent — role: schema_engineering / domain: codec_mapping
+tool_construction_agent — role: schema_engineering / domain: tools
+codebase_governance_agent — role: schema_engineering / domain: governance
+schema_driven_workflow_agent — role: schema_engineering / domain: workflows
+database_optimization_agent — role: schema_engineering / domain: optimization
+code_testing_agent — role: schema_engineering / domain: testing
+schema_tool_orchestrator — role: schema_engineering / domain: coordination
+
+========================
+LIBRARY LIFECYCLE & VERSION GOVERNANCE LAYER
+========================
+version_control_agent — role: library_lifecycle / domain: versioning
+library_maintenance_agent — role: library_lifecycle / domain: maintenance
+deprecation_manager_agent — role: library_lifecycle / domain: deprecation
+update_propagation_agent — role: library_lifecycle / domain: propagation
+compatibility_checker_agent — role: library_lifecycle / domain: compatibility
+library_indexing_agent — role: library_lifecycle / domain: indexing
+change_impact_analyzer — role: library_lifecycle / domain: impact
+release_manager_agent — role: library_lifecycle / domain: releases
+rollback_agent — role: library_lifecycle / domain: rollback
+library_governance_agent — role: library_lifecycle / domain: governance
+
+========================
+SKILL / WORKFLOW / TOOLING INFRASTRUCTURE LAYER
+========================
+skill_library_agent — role: skill_infrastructure / domain: skills
+skill_loader_agent — role: skill_infrastructure / domain: loading
+workflow_template_agent — role: skill_infrastructure / domain: templates
+tool_registry_agent — role: skill_infrastructure / domain: tools
+tool_selection_agent — role: skill_infrastructure / domain: selection
+toolchain_builder_agent — role: skill_infrastructure / domain: toolchains
+skill_evolution_agent — role: skill_infrastructure / domain: evolution
+workflow_optimization_agent — role: skill_infrastructure / domain: optimization
+
+========================
+MEMORY GOVERNANCE LAYER
+========================
+memory_policy_agent — role: memory_governance / domain: policy
+memory_integrity_agent — role: memory_governance / domain: integrity
+memory_permissioning_agent — role: memory_governance / domain: permissions
+memory_audit_agent — role: memory_governance / domain: audit
+memory_conflict_resolver — role: memory_governance / domain: conflict
+memory_versioning_agent — role: memory_governance / domain: versioning
+memory_hygiene_agent — role: memory_governance / domain: hygiene
+memory_provenance_agent — role: memory_governance / domain: provenance
+memory_alignment_agent — role: memory_governance / domain: alignment
+memory_governance_orchestrator — role: memory_governance / domain: coordination
+
+========================
+GOVERNANCE & OVERSIGHT LAYER
+========================
+oversight_agent — role: governance / domain: oversight
+audit_trail_agent — role: governance / domain: audit
+risk_assessment_agent — role: governance / domain: risk
+ethics_review_agent — role: governance / domain: ethics
+compliance_agent — role: governance / domain: compliance
+permissioning_agent — role: governance / domain: permissions
+governance_orchestrator — role: governance / domain: coordination
+bias_detection_agent — role: governance / domain: bias
+accountability_agent — role: governance / domain: accountability
+
+# Moral–Legal Sub‑Layer
+moral_reasoning_agent — role: governance_moral_legal / domain: moral
+legal_compliance_agent — role: governance_moral_legal / domain: legal
+ethical_constraint_agent — role: governance_moral_legal / domain: constraints
+harm_detection_agent — role: governance_harm / domain: harm_detection
+intent_verification_agent — role: governance_moral_legal / domain: intent
+moral_consistency_agent — role: governance_moral_legal / domain: consistency
+legal_risk_assessment_agent — role: governance_moral_legal / domain: legal_risk
+policy_enforcement_agent — role: governance_moral_legal / domain: policy
+output_sanitization_agent — role: governance_moral_legal / domain: sanitization
+moral_legal_audit_agent — role: governance_moral_legal / domain: audit
+behavior_authorization_agent — role: governance_moral_legal / domain: authorization
+ethical_legal_orchestrator — role: governance_moral_legal / domain: coordination
+
+# Vulnerability Sub‑Layer
+vulnerability_detection_agent — role: governance_vulnerability / domain: detection
+context_sensitivity_agent — role: governance_vulnerability / domain: context
+population_risk_agent — role: governance_vulnerability / domain: population
+cognitive_vulnerability_agent — role: governance_vulnerability / domain: cognitive
+situational_vulnerability_agent — role: governance_vulnerability / domain: situational
+system_fragility_agent — role: governance_vulnerability / domain: fragility
+dependency_risk_agent — role: governance_vulnerability / domain: dependency
+vulnerability_classification_agent — role: governance_vulnerability / domain: classification
+vulnerability_escalation_agent — role: governance_vulnerability / domain: escalation
+vulnerability_audit_agent — role: governance_vulnerability / domain: audit
+
+# Harm & Misuse Sub‑Layer
+intent_risk_agent — role: governance_harm / domain: intent_risk
+consequence_modeling_agent — role: governance_harm / domain: consequences
+misuse_prevention_agent — role: governance_harm / domain: misuse
+psychological_harm_agent — role: governance_harm / domain: psychological
+physical_harm_agent — role: governance_harm / domain: physical
+social_harm_agent — role: governance_harm / domain: social
+economic_harm_agent — role: governance_harm / domain: economic
+systemic_harm_agent — role: governance_harm / domain: systemic
+harm_classification_agent — role: governance_harm / domain: classification
+harm_escalation_agent — role: governance_harm / domain: escalation
+harm_audit_agent — role: governance_harm / domain: audit
+```
+
