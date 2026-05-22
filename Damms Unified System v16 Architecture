@@ -249,6 +249,38 @@ system:
         - memory_alignment_agent
         - memory_governance_orchestrator
 
+- id: governance_and_oversight_layer
+      order: 15
+      role: governance
+      description: >
+        Global safety, ethics, legal compliance, risk, permissions, bias detection,
+        accountability, and moral-legal orchestration.
+      agents:
+        # existing high-level governance agents
+        - oversight_agent
+        - audit_trail_agent
+        - risk_assessment_agent
+        - ethics_review_agent
+        - compliance_agent
+        - permissioning_agent
+        - governance_orchestrator
+        - bias_detection_agent
+        - accountability_agent
+
+        # moral–legal sub-layer agents
+        - moral_reasoning_agent
+        - legal_compliance_agent
+        - ethical_constraint_agent
+        - harm_detection_agent
+        - intent_verification_agent
+        - moral_consistency_agent
+        - legal_risk_assessment_agent
+        - policy_enforcement_agent      # now explicitly scoped as moral/legal + platform policy
+        - output_sanitization_agent
+        - moral_legal_audit_agent
+        - behavior_authorization_agent
+        - ethical_legal_orchestrator
+
     - id: governance_and_oversight_layer
       order: 15
       role: governance
@@ -330,4 +362,7 @@ system:
         - evidence_ranking_agent
         - uncertainty_estimation_agent
         - claim_validation_agent
+
+    
+
 ```
