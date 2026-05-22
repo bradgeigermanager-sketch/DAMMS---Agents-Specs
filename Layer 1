@@ -1,0 +1,1163 @@
+## 1. Unified architecture overview
+
+**Core pattern:** Society‑of‑Agents + DAMMS + layered cognitive/governance stack.
+
+- **Top‑level roles:**  
+  - **UI Agent:** handles UX, channels, session context.  
+  - **Orchestrator:** plans, routes, coordinates agents, enforces global invariants.  
+  - **Managers:** domain managers (Reasoning, Knowledge, Safety, Tools, Memory, Research, Governance).  
+  - **Specialists:** narrow, skill/task‑specific agents.  
+  - **Validators:** fact‑checkers, constraint enforcers, harm/vulnerability/misuse guards.
+
+- **Pipelines:**  
+  - **Normal interaction pipeline** (fast path).  
+  - **High‑risk interaction pipeline** (escalated, multi‑validator, governance‑gated).  
+
+- **Governance:**  
+  - Moral/legal agents, oversight council, escalation rules, audit trail, policy contracts.
+
+---
+
+## 2. Agent manifests (YAML)
+
+```yaml
+# agents.yaml
+society:
+  id: "damms-society-v1"
+  description: "DAMMS-aligned Society-of-Agents architecture"
+  global_invariants:
+    - "No action may violate configured legal constraints."
+    - "High-risk content must pass safety + governance validation."
+    - "All external actions must be logged with causal trace IDs."
+
+agents:
+  - id: "ui_agent"
+    role: "UI"
+    manager: null
+    capabilities:
+      - "render_ui"
+      - "collect_user_input"
+      - "session_state"
+    entrypoint: "agents.ui:UIAgent"
+
+  - id: "orchestrator"
+    role: "Orchestrator"
+    manager: null
+    capabilities:
+      - "plan"
+      - "route"
+      - "compose"
+      - "enforce_invariants"
+    entrypoint: "agents.orchestrator:Orchestrator"
+
+  - id: "reasoning_manager"
+    role: "Manager"
+    domain: "reasoning"
+    capabilities:
+      - "task_decomposition"
+      - "multi_step_reasoning"
+    entrypoint: "agents.managers.reasoning:ReasoningManager"
+
+  - id: "knowledge_manager"
+    role: "Manager"
+    domain: "knowledge"
+    capabilities:
+      - "retrieval"
+      - "knowledge_audit"
+    entrypoint: "agents.managers.knowledge:KnowledgeManager"
+
+  - id: "safety_manager"
+    role: "Manager"
+    domain: "safety"
+    capabilities:
+      - "harm_detection"
+      - "policy_enforcement"
+    entrypoint: "agents.managers.safety:SafetyManager"
+
+  - id: "governance_manager"
+    role: "Manager"
+    domain: "governance"
+    capabilities:
+      - "escalation"
+      - "oversight"
+      - "decision_review"
+    entrypoint: "agents.managers.governance:GovernanceManager"
+
+  - id: "fact_checker"
+    role: "Specialist"
+    domain: "validation"
+    capabilities:
+      - "fact_check"
+      - "source_citation"
+    entrypoint: "agents.specialists.fact_checker:FactChecker"
+
+  - id: "constraint_enforcer"
+    role: "Validator"
+    domain: "constraints"
+    capabilities:
+      - "check_constraints"
+    entrypoint: "agents.validators.constraints:ConstraintEnforcer"
+
+  - id: "harm_validator"
+    role: "Validator"
+    domain: "safety"
+    capabilities:
+      - "harm_risk_assessment"
+    entrypoint: "agents.validators.harm:HarmValidator"
+
+  - id: "legal_validator"
+    role: "Validator"
+    domain: "legal"
+    capabilities:
+      - "legal_compliance_check"
+    entrypoint: "agents.validators.legal:LegalValidator"
+```
+
+---
+
+## 3. Message schemas (Python, Pydantic)
+
+```python
+# core/schemas.py
+from enum import Enum
+from typing import List, Dict, Any, Optional
+from pydantic import BaseModel, Field
+import uuid
+import datetime as dt
+
+
+class RiskLevel(str, Enum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+
+
+class Channel(str, Enum):
+    UI = "ui"
+    INTERNAL = "internal"
+    EXTERNAL_API = "external_api"
+
+
+class MessageType(str, Enum):
+    USER_INPUT = "user_input"
+    PLAN = "plan"
+    TASK = "task"
+    RESULT = "result"
+    VALIDATION_REQUEST = "validation_request"
+    VALIDATION_RESULT = "validation_result"
+    GOVERNANCE_DECISION = "governance_decision"
+    ERROR = "error"
+
+
+class CausalTrace(BaseModel):
+    trace_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    parent_id: Optional[str] = None
+    span: Optional[str] = None
+    created_at: dt.datetime = Field(default_factory=dt.datetime.utcnow)
+
+
+class PolicyContext(BaseModel):
+    risk_level: RiskLevel = RiskLevel.LOW
+    high_risk_flags: List[str] = []
+    policies: List[str] = []  # policy IDs or names
+
+
+class AgentRef(BaseModel):
+    id: str
+    role: str
+    domain: Optional[str] = None
+
+
+class Message(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    type: MessageType
+    source: AgentRef
+    target: AgentRef
+    channel: Channel = Channel.INTERNAL
+    content: Dict[str, Any]
+    policy_context: PolicyContext = PolicyContext()
+    causal_trace: CausalTrace = CausalTrace()
+    created_at: dt.datetime = Field(default_factory=dt.datetime.utcnow)
+
+
+class ValidationResult(BaseModel):
+    passed: bool
+    reasons: List[str] = []
+    risk_level: RiskLevel = RiskLevel.LOW
+    suggested_modifications: Optional[Dict[str, Any]] = None
+```
+
+---
+
+## 4. Orchestrator runtime skeleton
+
+```python
+# agents/orchestrator.py
+from typing import List
+from core.schemas import Message, MessageType, RiskLevel, AgentRef
+from core.routing import Router
+from core.policies import PolicyEngine
+from core.tracing import TraceLogger
+
+
+class Orchestrator:
+    def __init__(self, router: Router, policy_engine: PolicyEngine, trace_logger: TraceLogger):
+        self.router = router
+        self.policy_engine = policy_engine
+        self.trace_logger = trace_logger
+
+    async def handle_user_input(self, msg: Message) -> Message:
+        self.trace_logger.start_span(msg.causal_trace, "orchestrator.handle_user_input")
+
+        # 1. Classify risk
+        policy_ctx = self.policy_engine.assess_risk(msg)
+        msg.policy_context = policy_ctx
+
+        # 2. Choose pipeline
+        if policy_ctx.risk_level == RiskLevel.HIGH:
+            return await self._high_risk_pipeline(msg)
+        else:
+            return await self._normal_pipeline(msg)
+
+    async def _normal_pipeline(self, msg: Message) -> Message:
+        # 1. Reasoning manager for plan
+        plan_msg = await self.router.send_to(
+            msg,
+            target_id="reasoning_manager",
+            new_type=MessageType.PLAN,
+        )
+
+        # 2. Execute plan via specialists/managers
+        result_msg = await self.router.execute_plan(plan_msg)
+
+        # 3. Light validation (fact-check + constraints)
+        validated_msg = await self._run_validators(result_msg, validators=["fact_checker", "constraint_enforcer"])
+
+        # 4. Return to UI
+        return await self.router.send_to_ui(validated_msg)
+
+    async def _high_risk_pipeline(self, msg: Message) -> Message:
+        # 1. Safety manager pre-screen
+        screened_msg = await self.router.send_to(
+            msg,
+            target_id="safety_manager",
+            new_type=MessageType.TASK,
+        )
+
+        # 2. Reasoning manager for plan (under safety constraints)
+        plan_msg = await self.router.send_to(
+            screened_msg,
+            target_id="reasoning_manager",
+            new_type=MessageType.PLAN,
+        )
+
+        # 3. Execute plan
+        result_msg = await self.router.execute_plan(plan_msg)
+
+        # 4. Heavy validation: harm + legal + constraints + fact-check
+        validated_msg = await self._run_validators(
+            result_msg,
+            validators=["harm_validator", "legal_validator", "constraint_enforcer", "fact_checker"],
+        )
+
+        # 5. Governance review if still high risk
+        if validated_msg.policy_context.risk_level == RiskLevel.HIGH:
+            gov_msg = await self.router.send_to(
+                validated_msg,
+                target_id="governance_manager",
+                new_type=MessageType.GOVERNANCE_DECISION,
+            )
+            return await self.router.send_to_ui(gov_msg)
+
+        return await self.router.send_to_ui(validated_msg)
+
+    async def _run_validators(self, msg: Message, validators: List[str]) -> Message:
+        current = msg
+        for validator_id in validators:
+            current = await self.router.send_to(
+                current,
+                target_id=validator_id,
+                new_type=MessageType.VALIDATION_REQUEST,
+            )
+        return current
+```
+
+---
+
+## 5. Routing, policies, and tracing
+
+```python
+# core/routing.py
+from typing import Callable, Dict, Any
+from core.schemas import Message, AgentRef, MessageType, Channel
+
+
+class Router:
+    def __init__(self, registry: Dict[str, Any]):
+        """
+        registry: {agent_id: agent_instance}
+        """
+        self.registry = registry
+
+    async def send_to(self, msg: Message, target_id: str, new_type: MessageType) -> Message:
+        target_agent = self.registry[target_id]
+        new_msg = msg.copy(update={
+            "type": new_type,
+            "target": AgentRef(id=target_id, role=getattr(target_agent, "role", "unknown")),
+        })
+        handler: Callable = getattr(target_agent, "handle", None)
+        if handler is None:
+            raise RuntimeError(f"Agent {target_id} has no handle()")
+        return await handler(new_msg)
+
+    async def execute_plan(self, plan_msg: Message) -> Message:
+        agent = self.registry["reasoning_manager"]
+        return await agent.execute_plan(plan_msg)
+
+    async def send_to_ui(self, msg: Message) -> Message:
+        ui_agent = self.registry["ui_agent"]
+        return await ui_agent.render(msg)
+```
+
+```python
+# core/policies.py
+from core.schemas import Message, PolicyContext, RiskLevel
+
+
+class PolicyEngine:
+    def __init__(self, config: dict):
+        self.config = config
+
+    def assess_risk(self, msg: Message) -> PolicyContext:
+        text = str(msg.content.get("text", "")).lower()
+        flags = []
+
+        # toy heuristic; in your system this maps to DAMMS risk manifolds
+        if any(k in text for k in ["suicide", "kill", "bomb", "exploit"]):
+            flags.append("self_harm_or_violence")
+        if any(k in text for k in ["credit card", "ssn", "password"]):
+            flags.append("sensitive_personal_data")
+
+        if flags:
+            level = RiskLevel.HIGH
+        else:
+            level = RiskLevel.LOW
+
+        return PolicyContext(
+            risk_level=level,
+            high_risk_flags=flags,
+            policies=["global_safety_policy_v1"],
+        )
+```
+
+```python
+# core/tracing.py
+from core.schemas import CausalTrace, Message
+
+
+class TraceLogger:
+    def start_span(self, trace: CausalTrace, span_name: str) -> None:
+        trace.span = span_name
+        # plug into your logging/observability stack
+        # e.g., OpenTelemetry, structured logs, etc.
+
+    def log_message(self, msg: Message) -> None:
+        # persist msg + causal_trace + policy_context
+        ...
+```
+
+---
+
+## 6. Example agents (UI, Reasoning, Safety, Validators)
+
+```python
+# agents/ui.py
+from core.schemas import Message, AgentRef, MessageType, Channel
+
+
+class UIAgent:
+    role = "UI"
+
+    async def render(self, msg: Message) -> Message:
+        # Here you'd adapt to your actual UI framework
+        # For now, just echo the message back
+        return msg
+
+    async def handle_user_event(self, user_text: str, user_id: str) -> Message:
+        return Message(
+            type=MessageType.USER_INPUT,
+            source=AgentRef(id="ui_agent", role="UI"),
+            target=AgentRef(id="orchestrator", role="Orchestrator"),
+            channel=Channel.UI,
+            content={"text": user_text, "user_id": user_id},
+        )
+```
+
+```python
+# agents/managers/reasoning.py
+from core.schemas import Message, MessageType, AgentRef
+
+
+class ReasoningManager:
+    role = "Manager"
+    domain = "reasoning"
+
+    async def handle(self, msg: Message) -> Message:
+        if msg.type == MessageType.PLAN:
+            return await self._plan(msg)
+        raise ValueError(f"Unsupported message type: {msg.type}")
+
+    async def _plan(self, msg: Message) -> Message:
+        # Very simple example: one-step plan
+        plan = {
+            "steps": [
+                {
+                    "id": "step-1",
+                    "agent": "knowledge_manager",
+                    "action": "answer_question",
+                    "input": msg.content,
+                }
+            ]
+        }
+        return msg.copy(update={"content": {"plan": plan}})
+
+    async def execute_plan(self, plan_msg: Message) -> Message:
+        # In a full system, this would iterate steps, call agents, aggregate results
+        # Here we just forward to knowledge_manager as a demo
+        from core.routing import Router  # in reality, inject router instead
+        raise NotImplementedError("Wire this to Router in your runtime.")
+```
+
+```python
+# agents/managers/safety.py
+from core.schemas import Message, MessageType
+
+
+class SafetyManager:
+    role = "Manager"
+    domain = "safety"
+
+    async def handle(self, msg: Message) -> Message:
+        # Pre-screen, redact, or reframe content
+        content = dict(msg.content)
+        # Example: mark that safety pre-screening occurred
+        content["safety_screened"] = True
+        return msg.copy(update={"content": content})
+```
+
+```python
+# agents/validators/harm.py
+from core.schemas import Message, ValidationResult, RiskLevel, MessageType
+
+
+class HarmValidator:
+    role = "Validator"
+    domain = "safety"
+
+    async def handle(self, msg: Message) -> Message:
+        text = str(msg.content.get("text", "")).lower()
+        reasons = []
+        passed = True
+        level = RiskLevel.LOW
+
+        if "suicide" in text or "kill" in text:
+            passed = False
+            level = RiskLevel.HIGH
+            reasons.append("Detected self-harm or violence-related content.")
+
+        vr = ValidationResult(
+            passed=passed,
+            reasons=reasons,
+            risk_level=level,
+        )
+
+        new_ctx = msg.policy_context.copy(update={"risk_level": level})
+        return msg.copy(update={
+            "type": MessageType.VALIDATION_RESULT,
+            "content": {**msg.content, "harm_validation": vr.dict()},
+            "policy_context": new_ctx,
+        })
+```
+
+---
+
+## 7. Documentation (architecture + runtime)
+
+### 7.1 High-level architecture doc (excerpt)
+
+**Title:** DAMMS‑Aligned Society‑of‑Agents System Architecture (v1)
+
+**Purpose:**  
+Define a unified, DAMMS‑aligned multi‑agent architecture that combines:
+
+- Society‑of‑Agents interaction pattern  
+- Layered cognitive stack  
+- Governance, safety, and oversight  
+- Observability, causal tracing, and self‑healing
+
+**Layers (example mapping):**
+
+1. **Interface Layer:** UI Agent, channels, session state.  
+2. **Orchestration Layer:** Orchestrator, routing, planning, policy context.  
+3. **Reasoning Layer:** Reasoning Manager, planners, decomposition.  
+4. **Knowledge Layer:** Knowledge Manager, retrieval, knowledge audit.  
+5. **Safety Layer:** Safety Manager, harm detection, redaction.  
+6. **Validation Layer:** Fact Checker, Constraint Enforcer, Harm/Legal Validators.  
+7. **Governance Layer:** Governance Manager, oversight council, escalation.  
+8. **Observability Layer:** TraceLogger, audit trail, causal DAG.  
+9. **Tooling/Skills Layer:** Tool adapters, workflows, external APIs.  
+10. **Memory Governance Layer:** Long‑term memory, retention policies, access control.  
+
+(You can plug this into your existing DAMMS v16 layer numbering.)
+
+### 7.2 Governance & safety pipeline (contract)
+
+- **Global invariants:**  
+  - **Invariant 1:** No response may bypass safety + validation when `risk_level == high`.  
+  - **Invariant 2:** All high‑risk decisions must be logged with a governance decision record.  
+  - **Invariant 3:** External actions must be traceable to a user, a policy, and a causal trace ID.
+
+- **High‑risk pipeline stages:**
+  1. Risk assessment (PolicyEngine).  
+  2. Safety pre‑screen (SafetyManager).  
+  3. Plan under constraints (ReasoningManager).  
+  4. Execution.  
+  5. Multi‑validator pass (harm, legal, constraints, fact‑check).  
+  6. Governance review if still high risk.  
+  7. UI response with explanation if content is blocked or modified.
+
+---
+
+## 8. Putting it together (bootstrap script)
+
+```python
+# runtime/bootstrap.py
+from core.routing import Router
+from core.policies import PolicyEngine
+from core.tracing import TraceLogger
+from agents.ui import UIAgent
+from agents.orchestrator import Orchestrator
+from agents.managers.safety import SafetyManager
+from agents.managers.reasoning import ReasoningManager
+from agents.validators.harm import HarmValidator
+# ... import other agents ...
+
+
+def build_runtime(config: dict):
+    policy_engine = PolicyEngine(config.get("policies", {}))
+    trace_logger = TraceLogger()
+
+    registry = {
+        "ui_agent": UIAgent(),
+        "orchestrator": None,  # placeholder until router exists
+        "safety_manager": SafetyManager(),
+        "reasoning_manager": ReasoningManager(),
+        "harm_validator": HarmValidator(),
+        # ... add all managers, specialists, validators ...
+    }
+
+    router = Router(registry=registry)
+    orchestrator = Orchestrator(router=router, policy_engine=policy_engine, trace_logger=trace_logger)
+    registry["orchestrator"] = orchestrator
+
+    return {
+        "router": router,
+        "orchestrator": orchestrator,
+        "policy_engine": policy_engine,
+        "trace_logger": trace_logger,
+        "registry": registry,
+    }
+```
+
+Nice—going straight for the spine of the system. Let’s complete the remaining agent classes as a coherent set.
+
+---
+
+### 1. Knowledge manager
+
+```python
+# agents/managers/knowledge.py
+from core.schemas import Message, MessageType, AgentRef
+
+
+class KnowledgeManager:
+    role = "Manager"
+    domain = "knowledge"
+
+    def __init__(self, retriever, auditor):
+        """
+        retriever: abstraction over vector DB / search / tools
+        auditor: knowledge audit component (e.g., checks freshness, conflicts)
+        """
+        self.retriever = retriever
+        self.auditor = auditor
+
+    async def handle(self, msg: Message) -> Message:
+        if msg.type == MessageType.TASK:
+            return await self._answer_question(msg)
+        raise ValueError(f"Unsupported message type: {msg.type}")
+
+    async def _answer_question(self, msg: Message) -> Message:
+        query = msg.content.get("text") or msg.content.get("query")
+        results = await self.retriever.search(query)
+        audited = await self.auditor.audit(results)
+
+        return msg.copy(update={
+            "type": MessageType.RESULT,
+            "content": {
+                **msg.content,
+                "answer": audited.get("answer"),
+                "sources": audited.get("sources", []),
+                "knowledge_audit": audited,
+            },
+            "target": AgentRef(id="orchestrator", role="Orchestrator"),
+        })
+```
+
+---
+
+### 2. Safety manager (already simple, keep as-is but slightly richer)
+
+```python
+# agents/managers/safety.py
+from core.schemas import Message, MessageType, RiskLevel
+
+
+class SafetyManager:
+    role = "Manager"
+    domain = "safety"
+
+    async def handle(self, msg: Message) -> Message:
+        content = dict(msg.content)
+
+        # Example: redact obvious sensitive tokens (toy logic)
+        redactions = []
+        if "password" in str(content.get("text", "")).lower():
+            redactions.append("password")
+            content["text"] = content["text"].replace("password", "[REDACTED]")
+
+        # Mark that safety pre-screening occurred
+        content["safety_screened"] = True
+        content["redactions"] = redactions
+
+        # Optionally bump risk level if we saw something concerning
+        ctx = msg.policy_context
+        if redactions and ctx.risk_level == RiskLevel.LOW:
+            ctx = ctx.copy(update={"risk_level": RiskLevel.MEDIUM})
+
+        return msg.copy(update={"content": content, "policy_context": ctx})
+```
+
+---
+
+### 3. Governance manager
+
+```python
+# agents/managers/governance.py
+from core.schemas import Message, MessageType, AgentRef, RiskLevel
+
+
+class GovernanceManager:
+    role = "Manager"
+    domain = "governance"
+
+    def __init__(self, rules_engine, decision_store):
+        """
+        rules_engine: evaluates governance rules / escalation policies
+        decision_store: persists governance decisions for audit
+        """
+        self.rules_engine = rules_engine
+        self.decision_store = decision_store
+
+    async def handle(self, msg: Message) -> Message:
+        if msg.type != MessageType.GOVERNANCE_DECISION:
+            raise ValueError(f"Unsupported message type: {msg.type}")
+
+        decision = await self.rules_engine.evaluate(msg)
+        await self.decision_store.save(msg, decision)
+
+        # Optionally modify content or block it
+        content = dict(msg.content)
+        content["governance_decision"] = decision
+
+        # If blocked, downgrade to safe explanation
+        if decision.get("action") == "block":
+            content["text"] = decision.get("user_message", "This content cannot be provided.")
+            new_risk = RiskLevel.LOW
+        else:
+            new_risk = msg.policy_context.risk_level
+
+        ctx = msg.policy_context.copy(update={"risk_level": new_risk})
+
+        return msg.copy(update={
+            "type": MessageType.RESULT,
+            "content": content,
+            "policy_context": ctx,
+            "target": AgentRef(id="ui_agent", role="UI"),
+        })
+```
+
+---
+
+### 4. Fact checker specialist
+
+```python
+# agents/specialists/fact_checker.py
+from core.schemas import Message, MessageType, ValidationResult, RiskLevel
+
+
+class FactChecker:
+    role = "Specialist"
+    domain = "validation"
+
+    def __init__(self, checker_backend):
+        """
+        checker_backend: service that can verify claims and return evidence
+        """
+        self.checker_backend = checker_backend
+
+    async def handle(self, msg: Message) -> Message:
+        text = str(msg.content.get("text", ""))
+        result = await self.checker_backend.check(text)
+
+        passed = result.get("status") == "ok"
+        reasons = result.get("issues", [])
+        level = RiskLevel.LOW if passed else RiskLevel.MEDIUM
+
+        vr = ValidationResult(
+            passed=passed,
+            reasons=reasons,
+            risk_level=level,
+            suggested_modifications=result.get("suggested_modifications"),
+        )
+
+        ctx = msg.policy_context.copy(update={"risk_level": max(ctx_level(level, msg.policy_context.risk_level), level)})
+
+        return msg.copy(update={
+            "type": MessageType.VALIDATION_RESULT,
+            "content": {**msg.content, "fact_check": vr.dict(), "evidence": result.get("evidence", [])},
+            "policy_context": ctx,
+        })
+
+
+def ctx_level(a: RiskLevel, b: RiskLevel) -> RiskLevel:
+    order = [RiskLevel.LOW, RiskLevel.MEDIUM, RiskLevel.HIGH]
+    return max(a, b, key=lambda x: order.index(x))
+```
+
+---
+
+### 5. Constraint enforcer validator
+
+```python
+# agents/validators/constraints.py
+from core.schemas import Message, MessageType, ValidationResult, RiskLevel
+
+
+class ConstraintEnforcer:
+    role = "Validator"
+    domain = "constraints"
+
+    def __init__(self, constraint_set):
+        """
+        constraint_set: list or engine of hard constraints (e.g., style, length, domain rules)
+        """
+        self.constraint_set = constraint_set
+
+    async def handle(self, msg: Message) -> Message:
+        violations = await self.constraint_set.check(msg)
+        passed = len(violations) == 0
+        level = RiskLevel.LOW if passed else RiskLevel.MEDIUM
+
+        vr = ValidationResult(
+            passed=passed,
+            reasons=violations,
+            risk_level=level,
+        )
+
+        ctx = msg.policy_context.copy(update={"risk_level": ctx_level(level, msg.policy_context.risk_level)})
+
+        return msg.copy(update={
+            "type": MessageType.VALIDATION_RESULT,
+            "content": {**msg.content, "constraint_validation": vr.dict()},
+            "policy_context": ctx,
+        })
+```
+
+---
+
+### 6. Harm validator (you already have, just keep)
+
+(Your existing `HarmValidator` is fine; it already fits the pattern.)
+
+---
+
+### 7. Legal validator
+
+```python
+# agents/validators/legal.py
+from core.schemas import Message, MessageType, ValidationResult, RiskLevel
+
+
+class LegalValidator:
+    role = "Validator"
+    domain = "legal"
+
+    def __init__(self, legal_rules_engine):
+        """
+        legal_rules_engine: evaluates content against jurisdictional/legal policies
+        """
+        self.legal_rules_engine = legal_rules_engine
+
+    async def handle(self, msg: Message) -> Message:
+        evaluation = await self.legal_rules_engine.evaluate(msg)
+        passed = evaluation.get("compliant", True)
+        reasons = evaluation.get("reasons", [])
+        level = RiskLevel.LOW if passed else RiskLevel.HIGH
+
+        vr = ValidationResult(
+            passed=passed,
+            reasons=reasons,
+            risk_level=level,
+        )
+
+        ctx = msg.policy_context.copy(update={"risk_level": ctx_level(level, msg.policy_context.risk_level)})
+
+        return msg.copy(update={
+            "type": MessageType.VALIDATION_RESULT,
+            "content": {**msg.content, "legal_validation": vr.dict()},
+            "policy_context": ctx,
+        })
+```
+
+---
+
+### 8. Research intelligence manager
+
+```python
+# agents/managers/research_intel.py
+from core.schemas import Message, MessageType, AgentRef
+
+
+class ResearchIntelligenceManager:
+    role = "Manager"
+    domain = "research_intelligence"
+
+    def __init__(self, web_researcher, summarizer):
+        """
+        web_researcher: multi-source research component
+        summarizer: synthesis / abstraction component
+        """
+        self.web_researcher = web_researcher
+        self.summarizer = summarizer
+
+    async def handle(self, msg: Message) -> Message:
+        if msg.type != MessageType.TASK:
+            raise ValueError(f"Unsupported message type: {msg.type}")
+
+        query = msg.content.get("research_query") or msg.content.get("text")
+        raw = await self.web_researcher.run(query)
+        synthesis = await self.summarizer.summarize(raw)
+
+        return msg.copy(update={
+            "type": MessageType.RESULT,
+            "content": {
+                **msg.content,
+                "research_raw": raw,
+                "research_summary": synthesis,
+            },
+            "target": AgentRef(id="orchestrator", role="Orchestrator"),
+        })
+```
+
+---
+
+### 9. Memory governance manager
+
+```python
+# agents/managers/memory_governance.py
+from core.schemas import Message, MessageType, AgentRef
+
+
+class MemoryGovernanceManager:
+    role = "Manager"
+    domain = "memory_governance"
+
+    def __init__(self, memory_store, policy_engine):
+        """
+        memory_store: abstraction over long-term memory
+        policy_engine: decides what can be stored, retained, or deleted
+        """
+        self.memory_store = memory_store
+        self.policy_engine = policy_engine
+
+    async def handle(self, msg: Message) -> Message:
+        action = msg.content.get("memory_action")
+        if action == "store":
+            return await self._store(msg)
+        if action == "retrieve":
+            return await self._retrieve(msg)
+        if action == "delete":
+            return await self._delete(msg)
+        raise ValueError(f"Unsupported memory_action: {action}")
+
+    async def _store(self, msg: Message) -> Message:
+        decision = self.policy_engine.decide_store(msg)
+        if not decision.get("allowed", True):
+            return msg.copy(update={
+                "type": MessageType.RESULT,
+                "content": {**msg.content, "memory_store": "denied", "reason": decision.get("reason")},
+            })
+
+        key = await self.memory_store.store(msg.content.get("memory_payload"))
+        return msg.copy(update={
+            "type": MessageType.RESULT,
+            "content": {**msg.content, "memory_store": "ok", "memory_key": key},
+        })
+
+    async def _retrieve(self, msg: Message) -> Message:
+        key = msg.content.get("memory_key")
+        data = await self.memory_store.retrieve(key)
+        return msg.copy(update={
+            "type": MessageType.RESULT,
+            "content": {**msg.content, "memory_data": data},
+        })
+
+    async def _delete(self, msg: Message) -> Message:
+        key = msg.content.get("memory_key")
+        await self.memory_store.delete(key)
+        return msg.copy(update={
+            "type": MessageType.RESULT,
+            "content": {**msg.content, "memory_delete": "ok"},
+        })
+```
+
+---
+
+### 10. Tool/skills manager (optional but usually needed)
+
+```python
+# agents/managers/tools.py
+from core.schemas import Message, MessageType
+
+
+class ToolsManager:
+    role = "Manager"
+    domain = "tools"
+
+    def __init__(self, tool_registry):
+        """
+        tool_registry: {tool_name: callable}
+        """
+        self.tool_registry = tool_registry
+
+    async def handle(self, msg: Message) -> Message:
+        if msg.type != MessageType.TASK:
+            raise ValueError(f"Unsupported message type: {msg.type}")
+
+        tool_name = msg.content.get("tool")
+        args = msg.content.get("args", {})
+        tool = self.tool_registry[tool_name]
+
+        result = await tool(**args) if callable(tool) else None
+
+        return msg.copy(update={
+            "type": MessageType.RESULT,
+            "content": {**msg.content, "tool_result": result},
+        })
+```
+
+---
+
+### 11. Wiring into the bootstrap
+
+Add these to your `registry` in `runtime/bootstrap.py`:
+
+```python
+from agents.managers.knowledge import KnowledgeManager
+from agents.managers.governance import GovernanceManager
+from agents.managers.research_intel import ResearchIntelligenceManager
+from agents.managers.memory_governance import MemoryGovernanceManager
+from agents.managers.tools import ToolsManager
+from agents.validators.legal import LegalValidator
+from agents.validators.constraints import ConstraintEnforcer
+from agents.specialists.fact_checker import FactChecker
+
+def build_runtime(config: dict):
+    # ... existing setup ...
+
+    registry.update({
+        "knowledge_manager": KnowledgeManager(retriever=..., auditor=...),
+        "governance_manager": GovernanceManager(rules_engine=..., decision_store=...),
+        "research_intel_manager": ResearchIntelligenceManager(web_researcher=..., summarizer=...),
+        "memory_governance_manager": MemoryGovernanceManager(memory_store=..., policy_engine=...),
+        "tools_manager": ToolsManager(tool_registry=...),
+        "legal_validator": LegalValidator(legal_rules_engine=...),
+        "constraint_enforcer": ConstraintEnforcer(constraint_set=...),
+        "fact_checker": FactChecker(checker_backend=...),
+        # harm_validator, safety_manager, etc. already present
+    })
+```
+
+
+## **A. Agent Classes (Completed So Far)**  
+### **Managers**
+- **ReasoningManager** — planning + decomposition  
+- **SafetyManager** — pre‑screening, redaction, risk adjustments  
+- **GovernanceManager** — rule evaluation, escalation, decision logging  
+- **ResearchIntelligenceManager** — multi‑source research + synthesis  
+- **MemoryGovernanceManager** — store/retrieve/delete with policy control  
+- **ToolsManager** — tool invocation and result handling  
+
+### **Specialists / Validators**
+- **FactChecker** — evidence‑based verification  
+- **ConstraintEnforcer** — structural, domain, and rule constraints  
+- **HarmValidator** — harm/violence/self‑harm detection  
+- **LegalValidator** — legal compliance evaluation  
+
+### **Core Agents**
+- **UIAgent** — user interface entry/exit  
+- **Orchestrator** — routing, pipeline selection, invariant enforcement  
+
+---
+
+## **B. Core Infrastructure (Completed So Far)**  
+- **Message schemas** (Pydantic models)  
+- **Causal tracing** (TraceLogger)  
+- **PolicyEngine** (risk assessment)  
+- **Router** (agent‑to‑agent messaging)  
+- **Bootstrap runtime** (registry + wiring)  
+- **YAML agent manifest** (society + agent definitions)  
+
+---
+
+## **C. Documentation (Completed So Far)**  
+- High‑level architecture overview  
+- Layered DAMMS mapping  
+- Governance + safety pipeline contract  
+- Global invariants  
+- Pipeline diagrams (in text form)  
+
+---
+
+# ⏳ **COMPONENTS THAT STILL REMAIN**
+
+These are the pieces we have *not* yet generated but are required for a fully complete, production‑ready unified system.
+
+## **A. Remaining Agent Classes**
+These are the last missing ones:
+
+### **1. Knowledge Auditor**  
+Used by KnowledgeManager to check:  
+- freshness  
+- conflicts  
+- hallucination risk  
+- source reliability  
+- DAMMS knowledge‑governance rules  
+
+### **2. Retriever Backend**  
+The actual retrieval layer:  
+- vector DB wrapper  
+- hybrid search  
+- tool‑based retrieval  
+- web search integration  
+
+### **3. Rules Engine (Governance)**  
+Needed by GovernanceManager:  
+- escalation rules  
+- jurisdictional rules  
+- DAMMS governance manifolds  
+- override logic  
+
+### **4. Decision Store**  
+Persistent audit trail for governance decisions.
+
+### **5. Constraint Set Engine**  
+Used by ConstraintEnforcer:  
+- length rules  
+- domain rules  
+- formatting rules  
+- safety constraints  
+- DAMMS constraint manifolds  
+
+### **6. Legal Rules Engine**  
+Used by LegalValidator:  
+- jurisdictional compliance  
+- intellectual property rules  
+- safety/legal boundaries  
+
+### **7. Web Researcher**  
+Used by ResearchIntelligenceManager:  
+- multi‑source fetch  
+- rate‑limited pipelines  
+- structured extraction  
+
+### **8. Summarizer**  
+Used by ResearchIntelligenceManager:  
+- multi‑document synthesis  
+- abstraction  
+- compression  
+
+### **9. Memory Store**  
+Used by MemoryGovernanceManager:  
+- long‑term memory  
+- embeddings  
+- metadata  
+- retention policies  
+
+---
+
+## **B. System‑Level Components Still Needed**
+
+### **1. Base Agent Class**  
+A shared interface for all agents:
+- `handle()`  
+- `role`, `domain`  
+- lifecycle hooks  
+- error handling  
+
+### **2. Full DAMMS Manifold Definitions**  
+- Cognitive manifolds  
+- Safety manifolds  
+- Governance manifolds  
+- Knowledge manifolds  
+- Tooling manifolds  
+
+### **3. Full Layered Architecture Document**  
+A complete, continuous whitepaper‑style document:
+- 16 layers  
+- cross‑layer flows  
+- invariants  
+- causal DAG  
+- self‑healing policies  
+
+### **4. Full Runtime Execution Engine**  
+- plan execution loop  
+- step orchestration  
+- parallelization  
+- cancellation  
+- retries  
+- timeouts  
+
+### **5. Observability Stack**  
+- structured logs  
+- causal DAG export  
+- metrics  
+- traces  
+
+### **6. Self‑Healing Engine**  
+- anomaly detection  
+- auto‑retry  
+- fallback agents  
+- governance‑triggered resets  
+
+---
+
+# 🎯 **Summary**
+
+### **Already delivered:**  
+All major agent classes except the backend engines they depend on, plus the orchestrator, schemas, routing, policies, manifests, and partial documentation.
+
+### **Still remaining:**  
+All backend engines (retriever, auditor, rules engines, memory store, etc.), the base agent class, full DAMMS manifolds, full documentation, and the runtime execution engine.
+
